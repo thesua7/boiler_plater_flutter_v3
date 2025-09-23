@@ -11,6 +11,27 @@
   "pleaseEnterPhoneNumber": "Please enter your phone number",
   "pleaseEnterValidPhoneNumber": "Please enter a valid phone number",
   "termsAndPrivacy": "By continuing, you agree to our Terms of Service and Privacy Policy",
+  "verifyOtp": "Verify OTP",
+  "enterVerificationCode": "Enter Verification Code",
+  "verificationCodeSent": "We've sent a 6-digit verification code to your phone",
+  "verificationCode": "Verification Code",
+  "verify": "Verify",
+  "resendCode": "Resend Code",
+  "didntReceiveCode": "Didn't receive the code?",
+  "pleaseEnterOtp": "Please enter the verification code",
+  "pleaseEnterValidOtp": "Please enter a valid 6-digit code",
+  "otpVerified": "OTP verified successfully",
+  "otpVerificationFailed": "OTP verification failed",
+  "resendIn": "Resend in {seconds} seconds",
+  "@resendIn": {
+    "description": "Resend timer text with seconds parameter",
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "resendAvailable": "Resend code available",
   "@appTitle": {
     "description": "The title of the application"
   },

@@ -24,4 +24,23 @@ class AuthRemoteDataSource extends BaseApiService {
       }
     }
   }
+
+  Future<Either<Failure, BaseResponse>> verifyOtp({required String phone,required String otp}) async {
+    try {
+      final response = await sendRequest(
+        url: ApiConstants.login,
+        params: {'phone': phone,
+        'otp':otp},
+        method: HttpMethod.POST,
+      );
+      return Either.right(response);
+    } catch (e) {
+      if (e is AppException) {
+        final failure = ExceptionHandler.exceptionToFailure(e);
+        return Either.left(failure);
+      } else {
+        return Either.left(UnknownFailure(message: e.toString()));
+      }
+    }
+  }
 }

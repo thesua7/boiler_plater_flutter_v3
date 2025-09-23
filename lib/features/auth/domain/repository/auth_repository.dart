@@ -6,6 +6,7 @@ abstract class AuthRepository {
 
 
   Future<Either<Failure, String>> sendOtp(String phone);
+  Future<Either<Failure, String>> verifyOtp(String phone,String otp);
 
 
 

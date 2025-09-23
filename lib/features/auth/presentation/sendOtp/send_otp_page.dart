@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/widgets/language_switcher.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../widgets/send_otp_form.dart';
+import 'send_otp_form.dart';
 
 /// Send OTP Page
 class SendOtpPage extends StatelessWidget {

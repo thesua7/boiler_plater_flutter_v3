@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../bloc/send_otp_bloc.dart';
-import '../bloc/send_otp_event.dart';
-import '../bloc/send_otp_state.dart';
+import '../verifyOtp/verify_otp_page.dart';
+
+import 'bloc/send_otp_bloc.dart';
+import 'bloc/send_otp_event.dart';
+import 'bloc/send_otp_state.dart';
 
 /// Send OTP Form Widget
 class SendOtpForm extends StatefulWidget {
@@ -193,10 +195,21 @@ class _SendOtpFormState extends State<SendOtpForm> {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
+              // Navigate to verify OTP page
+              _navigateToVerifyOtp();
             },
             child: Text(l10n.ok),
           ),
         ],
+      ),
+    );
+  }
+
+  /// Navigate to verify OTP page
+  void _navigateToVerifyOtp() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => VerifyOtpPage(phoneNumber: _phoneController.text.trim()),
       ),
     );
   }

@@ -1,5 +1,5 @@
 import 'package:boiler_plater_flutter_v3/features/auth/auth_binding.dart';
-import 'package:boiler_plater_flutter_v3/features/auth/presentation/pages/send_otp_page.dart';
+import 'package:boiler_plater_flutter_v3/features/auth/presentation/sendOtp/send_otp_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';

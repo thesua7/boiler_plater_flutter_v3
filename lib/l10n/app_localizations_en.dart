@@ -44,4 +44,46 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get termsAndPrivacy =>
       'By continuing, you agree to our Terms of Service and Privacy Policy';
+
+  @override
+  String get verifyOtp => 'Verify OTP';
+
+  @override
+  String get enterVerificationCode => 'Enter Verification Code';
+
+  @override
+  String get verificationCodeSent =>
+      'We\'ve sent a 6-digit verification code to your phone';
+
+  @override
+  String get verificationCode => 'Verification Code';
+
+  @override
+  String get verify => 'Verify';
+
+  @override
+  String get resendCode => 'Resend Code';
+
+  @override
+  String get didntReceiveCode => 'Didn\'t receive the code?';
+
+  @override
+  String get pleaseEnterOtp => 'Please enter the verification code';
+
+  @override
+  String get pleaseEnterValidOtp => 'Please enter a valid 6-digit code';
+
+  @override
+  String get otpVerified => 'OTP verified successfully';
+
+  @override
+  String get otpVerificationFailed => 'OTP verification failed';
+
+  @override
+  String resendIn(String seconds) {
+    return 'Resend in $seconds seconds';
+  }
+
+  @override
+  String get resendAvailable => 'Resend code available';
 }

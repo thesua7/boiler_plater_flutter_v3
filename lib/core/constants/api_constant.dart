@@ -11,6 +11,9 @@ class ApiConstants {
   // Authentication endpoints
   static String get login => '$_apiVersion/auth/login';
   static String get sendOtp => '$_apiVersion/auth/sent-otp';
+
+
+  
   static String get register => '$_apiVersion/auth/register';
   static String get refreshToken => '$_apiVersion/auth/refresh';
   static String get logout => '$_apiVersion/auth/logout';

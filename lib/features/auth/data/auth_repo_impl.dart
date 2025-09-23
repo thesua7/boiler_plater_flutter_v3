@@ -25,4 +25,23 @@ class AuthRepoImpl implements AuthRepository {
       }
     });
   }
+
+  @override
+  Future<Either<Failure, String>> verifyOtp(String phone, String otp
+      ) async {
+    final result = await dataSource.verifyOtp(phone: phone,otp: otp);
+
+    return result.fold((failure) => Either.left(failure), (response) {
+      if (response.isSuccess) {
+        return Either.right(response.message ?? 'OTP verified successfully');
+      } else {
+        return Either.left(
+          ValidationFailure(
+            message: response.message ?? 'Failed to verify OTP',
+            statusCode: response.statusCode,
+          ),
+        );
+      }
+    });
+  }
 }

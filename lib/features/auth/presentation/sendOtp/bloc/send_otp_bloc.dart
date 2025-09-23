@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/error/failures.dart';
-import '../../domain/usecases/send_otp_use_case.dart';
+import '../../../domain/usecases/send_otp_use_case.dart';
+
 import 'send_otp_event.dart';
 import 'send_otp_state.dart';
 
