@@ -337,7 +337,7 @@ class _ResponsiveDemoPageState extends State<ResponsiveDemoPage> {
           ),
           ResponsiveText(
             value,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
               color: Theme.of(context).primaryColor,
               fontWeight: FontWeight.w600,
               fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
