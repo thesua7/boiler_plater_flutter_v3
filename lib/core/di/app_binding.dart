@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import '../config/app_config.dart';
+import '../locale/language_service.dart';
 import '../theme/theme_service.dart';
 import '../../features/auth/auth_binding.dart';
 
@@ -20,6 +21,9 @@ class AppBinding {
     _getIt.registerLazySingleton<ThemeService>(
       () => ThemeService(),
     );
+
+    // Initialize language service and load saved language
+    await LanguageService().initialize();
     
     // Initialize auth module dependencies
     await AuthBinding.initialize();

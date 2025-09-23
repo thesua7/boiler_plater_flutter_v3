@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../bloc/send_otp_bloc.dart';
 import '../bloc/send_otp_event.dart';
 import '../bloc/send_otp_state.dart';
@@ -24,6 +25,8 @@ class _SendOtpFormState extends State<SendOtpForm> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return BlocConsumer<SendOtpBloc, SendOtpState>(
       listener: (context, state) {
         if (state is SendOtpSuccess) {
@@ -44,7 +47,7 @@ class _SendOtpFormState extends State<SendOtpForm> {
               
               // Header
               Text(
-                'Enter Your Phone Number',
+                l10n.enterPhoneNumber,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -54,7 +57,7 @@ class _SendOtpFormState extends State<SendOtpForm> {
               const SizedBox(height: 8),
               
               Text(
-                'We\'ll send you a verification code',
+                l10n.sendVerificationCode,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.7),
                 ),
@@ -69,8 +72,8 @@ class _SendOtpFormState extends State<SendOtpForm> {
                 keyboardType: TextInputType.phone,
                 enabled: !isLoading,
                 decoration: InputDecoration(
-                  labelText: 'Phone Number',
-                  hintText: '+1 234 567 8900',
+                  labelText: l10n.phoneNumber,
+                  hintText: l10n.phoneNumberHint,
                   prefixIcon: const Icon(Icons.phone),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -91,10 +94,10 @@ class _SendOtpFormState extends State<SendOtpForm> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your phone number';
+                    return l10n.pleaseEnterPhoneNumber;
                   }
                   if (value.length < 10) {
-                    return 'Please enter a valid phone number';
+                    return l10n.pleaseEnterValidPhoneNumber;
                   }
                   return null;
                 },
@@ -123,9 +126,9 @@ class _SendOtpFormState extends State<SendOtpForm> {
                           valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       )
-                    : const Text(
-                        'Send OTP',
-                        style: TextStyle(
+                    : Text(
+                        l10n.sendOtp,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -138,7 +141,7 @@ class _SendOtpFormState extends State<SendOtpForm> {
               TextButton(
                 onPressed: isLoading ? null : _resetForm,
                 child: Text(
-                  'Reset',
+                  l10n.reset,
                   style: TextStyle(
                     color: Theme.of(context).primaryColor,
                     fontWeight: FontWeight.w500,
@@ -150,7 +153,7 @@ class _SendOtpFormState extends State<SendOtpForm> {
               
               // Footer
               Text(
-                'By continuing, you agree to our Terms of Service and Privacy Policy',
+                l10n.termsAndPrivacy,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.6),
                 ),
@@ -180,17 +183,18 @@ class _SendOtpFormState extends State<SendOtpForm> {
 
   /// Show success dialog
   void _showSuccessDialog(BuildContext context, String message) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Success'),
+        title: Text(l10n.success),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: const Text('OK'),
+            child: Text(l10n.ok),
           ),
         ],
       ),

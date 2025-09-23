@@ -8,6 +8,7 @@ class AuthRepoImpl implements AuthRepository {
 
   AuthRepoImpl({required this.dataSource});
 
+  @override
   Future<Either<Failure, String>> sendOtp(String phone) async {
     final result = await dataSource.sendOtp(phone: phone);
 
