@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:go_router/go_router.dart';
+import '../../../../../core/route/route_constant.dart';
 import '../../../../../core/widgets/otp_input_field.dart';
 import '../../../../../l10n/app_localizations.dart';
+
 import '../../../auth_binding.dart';
 import '../bloc/verify_otp_bloc.dart';
 import '../bloc/verify_otp_event.dart';
@@ -257,7 +259,7 @@ class _VerifyOtpFormState extends State<VerifyOtpForm> {
 
   /// Go back to phone number entry
   void _goBack() {
-    Navigator.of(context).pop();
+    context.go(RouteConstant.sendOtp);
   }
 
   /// Show success dialog
@@ -299,13 +301,7 @@ class _VerifyOtpFormState extends State<VerifyOtpForm> {
 
   /// Navigate to next screen after successful verification
   void _navigateToNext() {
-    // TODO: Navigate to the next screen (e.g., home, dashboard, etc.)
-    // For now, just show a success message
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('OTP verified successfully! Welcome to the app.'),
-        backgroundColor: Colors.green,
-      ),
-    );
+    // Navigate to home screen after successful verification
+    context.go(RouteConstant.home);
   }
 }

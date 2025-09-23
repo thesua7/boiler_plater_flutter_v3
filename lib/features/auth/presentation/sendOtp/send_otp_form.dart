@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/route/route_constant.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../verifyOtp/verify_otp_page.dart';
+
 
 import 'bloc/send_otp_bloc.dart';
 import 'bloc/send_otp_event.dart';
@@ -207,11 +209,8 @@ class _SendOtpFormState extends State<SendOtpForm> {
 
   /// Navigate to verify OTP page
   void _navigateToVerifyOtp() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => VerifyOtpPage(phoneNumber: _phoneController.text.trim()),
-      ),
-    );
+    final phoneNumber = _phoneController.text.trim();
+    context.push('${RouteConstant.verifyOtp}?phone=$phoneNumber');
   }
 
   /// Show error snackbar
