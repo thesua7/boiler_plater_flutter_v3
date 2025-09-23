@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../../core/route/route_constant.dart';
 import '../../../../../core/widgets/otp_input_field.dart';
+import '../../../../../core/responsive/responsive.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 import '../../../auth_binding.dart';
@@ -72,159 +73,176 @@ class _VerifyOtpFormState extends State<VerifyOtpForm> {
       builder: (context, state) {
         final isLoading = state is VerifyOtpLoading;
         
-        return Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 40),
-              
-              // Header
-              Text(
-                l10n.enterVerificationCode,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              const SizedBox(height: 8),
-              
-              Text(
-                l10n.verificationCodeSent,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.7),
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              const SizedBox(height: 8),
-              
-              // Phone number display
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: Theme.of(context).dividerColor,
-                  ),
-                ),
-                child: Text(
-                  widget.phoneNumber,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              
-              const SizedBox(height: 48),
-              
-              // OTP Input Field
-              OtpInputField(
-                length: 6,
-                enabled: !isLoading,
-                onChanged: (value) {
-                  setState(() {
-                    _otp = value;
-                    _isOtpValid = value.length == 6;
-                  });
-                },
-                onCompleted: (value) {
-                  if (value.length == 6) {
-                    _verifyOtp();
-                  }
-                },
-                errorText: _otp.isNotEmpty && _otp.length < 6 
-                  ? l10n.pleaseEnterValidOtp 
-                  : null,
-              ),
-              
-              const SizedBox(height: 32),
-              
-              // Verify Button
-              ElevatedButton(
-                onPressed: _isOtpValid && !isLoading ? _verifyOtp : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 2,
-                ),
-                child: isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      )
-                    : Text(
-                        l10n.verify,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-              ),
-              
-              const SizedBox(height: 24),
-              
-              // Resend Code Section
-              Column(
+        return ResponsiveBuilder(
+          builder: (context, screenSize, isLandscape) {
+            return Form(
+              key: _formKey,
+              child: ResponsiveColumn(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    l10n.didntReceiveCode,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 40)),
+                  
+                  // Header
+                  ResponsiveText(
+                    l10n.enterVerificationCode,
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 28),
                     ),
                     textAlign: TextAlign.center,
                   ),
                   
-                  const SizedBox(height: 8),
+                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
                   
-                  if (_canResend)
-                    TextButton(
-                      onPressed: isLoading ? null : _resendOtp,
-                      child: Text(
-                        l10n.resendCode,
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.w500,
-                        ),
+                  ResponsiveText(
+                    l10n.verificationCodeSent,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.7),
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  
+                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                  
+                  // Phone number display
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveUtils.getResponsiveSpacing(context, 16),
+                      vertical: ResponsiveUtils.getResponsiveSpacing(context, 8),
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(
+                        ResponsiveUtils.getResponsiveBorderRadius(context, 8),
                       ),
-                    )
-                  else
-                    Text(
-                      l10n.resendIn(_resendTimer.toString()),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.6),
+                      border: Border.all(
+                        color: Theme.of(context).dividerColor,
+                      ),
+                    ),
+                    child: ResponsiveText(
+                      widget.phoneNumber,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                       ),
                       textAlign: TextAlign.center,
                     ),
+                  ),
+                  
+                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 48)),
+                  
+                  // OTP Input Field
+                  OtpInputField(
+                    length: 6,
+                    enabled: !isLoading,
+                    onChanged: (value) {
+                      setState(() {
+                        _otp = value;
+                        _isOtpValid = value.length == 6;
+                      });
+                    },
+                    onCompleted: (value) {
+                      if (value.length == 6) {
+                        _verifyOtp();
+                      }
+                    },
+                    errorText: _otp.isNotEmpty && _otp.length < 6 
+                      ? l10n.pleaseEnterValidOtp 
+                      : null,
+                  ),
+                  
+                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 32)),
+                  
+                  // Verify Button
+                  ResponsiveButton(
+                    onPressed: _isOtpValid && !isLoading ? _verifyOtp : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                          ResponsiveUtils.getResponsiveBorderRadius(context, 12),
+                        ),
+                      ),
+                      elevation: 2,
+                    ),
+                    child: isLoading
+                        ? SizedBox(
+                            height: ResponsiveUtils.getResponsiveFontSize(context, 20),
+                            width: ResponsiveUtils.getResponsiveFontSize(context, 20),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : ResponsiveText(
+                            l10n.verify,
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                  ),
+                  
+                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+                  
+                  // Resend Code Section
+                  ResponsiveColumn(
+                    children: [
+                      ResponsiveText(
+                        l10n.didntReceiveCode,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      
+                      SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                      
+                      if (_canResend)
+                        TextButton(
+                          onPressed: isLoading ? null : _resendOtp,
+                          child: ResponsiveText(
+                            l10n.resendCode,
+                            style: TextStyle(
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.w500,
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                            ),
+                          ),
+                        )
+                      else
+                        ResponsiveText(
+                          l10n.resendIn(_resendTimer.toString()),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.6),
+                            fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                    ],
+                  ),
+                  
+                  const Spacer(),
+                  
+                  // Back to phone number
+                  TextButton(
+                    onPressed: isLoading ? null : _goBack,
+                    child: ResponsiveText(
+                      '← Back to phone number',
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.w500,
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                      ),
+                    ),
+                  ),
                 ],
               ),
-              
-              const Spacer(),
-              
-              // Back to phone number
-              TextButton(
-                onPressed: isLoading ? null : _goBack,
-                child: Text(
-                  '← Back to phone number',
-                  style: TextStyle(
-                    color: Theme.of(context).primaryColor,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
+            );
+          },
         );
       },
     );

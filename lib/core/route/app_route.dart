@@ -1,4 +1,5 @@
 // Simple GoRouter configuration
+import 'package:boiler_plater_flutter_v3/examplePages/responsive_demo_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -10,7 +11,7 @@ import 'custom_transition.dart';
 import 'route_constant.dart';
 
 final GoRouter appRoute = GoRouter(
-  initialLocation: RouteConstant.sendOtp,
+  initialLocation: RouteConstant.home,
   routes: [
     GoRoute(
       path: RouteConstant.sendOtp,
@@ -39,7 +40,7 @@ final GoRouter appRoute = GoRouter(
       path: RouteConstant.home,
       pageBuilder: (context, state) => AppTransitionWrapper.build(
         state: state,
-        child: const Scaffold(body: Center(child: Text('Home Page'))),
+        child: ResponsiveDemoPage(),
         transition: AppTransition.scaleWithFade, // optional override
       ),
     ),

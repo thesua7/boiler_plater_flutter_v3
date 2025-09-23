@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/route/app_route.dart';
@@ -6,6 +7,7 @@ import 'core/theme/app_theme.dart';
 import 'core/di/app_binding.dart';
 import 'core/config/app_config.dart';
 import 'core/locale/language_service.dart';
+import 'core/responsive/responsive.dart';
 
 import 'l10n/app_localizations.dart';
 
@@ -16,6 +18,14 @@ void main() async {
   await AppBinding.initialize();
 
   // Initialize language service and load saved language
+
+  // Set preferred orientations
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
 
   runApp(const MyApp());
 }
@@ -49,6 +59,18 @@ class MyApp extends StatelessWidget {
               locale: languageService.currentLocale,
               routerConfig: appRoute,
               debugShowCheckedModeBanner: AppConfig.enableDebugMode,
+              builder: (context, child) {
+                return ResponsiveLayout(
+                  child: MediaQuery(
+                    data: MediaQuery.of(context).copyWith(
+                      textScaler: TextScaler.linear(
+                        MediaQuery.of(context).textScaleFactor.clamp(0.8, 1.2),
+                      ),
+                    ),
+                    child: child!,
+                  ),
+                );
+              },
             );
           },
         );
