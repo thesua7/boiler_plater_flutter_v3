@@ -88,7 +88,17 @@ class ExceptionHandler {
 
         case DioExceptionType.badResponse:
           final statusCode = e.response?.statusCode ?? 500;
-          final message = _getErrorMessageFromStatusCode(statusCode);
+          final responseData = e.response?.data;
+          
+          // Try to extract the actual error message from the response
+          String message = _getErrorMessageFromStatusCode(statusCode);
+          if (responseData is Map<String, dynamic>) {
+            final apiMessage = responseData['message'];
+            if (apiMessage != null && apiMessage.toString().isNotEmpty) {
+              message = apiMessage.toString();
+            }
+          }
+          
           return ServerException(
             message: message,
             statusCode: statusCode,

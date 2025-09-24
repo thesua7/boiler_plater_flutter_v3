@@ -1,6 +1,7 @@
 import 'package:boiler_plater_flutter_v3/core/error/either.dart';
 import 'package:boiler_plater_flutter_v3/core/error/failures.dart';
 import 'package:boiler_plater_flutter_v3/features/auth/data/dataSource/auth_remote_data_source.dart';
+import 'package:boiler_plater_flutter_v3/features/auth/domain/entities/user_info_entity.dart';
 import 'package:boiler_plater_flutter_v3/features/auth/domain/repository/auth_repository.dart';
 
 class AuthRepoImpl implements AuthRepository {
@@ -27,13 +28,13 @@ class AuthRepoImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, String>> verifyOtp(String phone, String otp
+  Future<Either<Failure, UserInfoEntity>> verifyOtp(String phone, String otp
       ) async {
     final result = await dataSource.verifyOtp(phone: phone,otp: otp);
 
     return result.fold((failure) => Either.left(failure), (response) {
       if (response.isSuccess) {
-        return Either.right(response.message ?? 'OTP verified successfully');
+        return Either.right(UserInfoEntity.fromJson(response.data));
       } else {
         return Either.left(
           ValidationFailure(

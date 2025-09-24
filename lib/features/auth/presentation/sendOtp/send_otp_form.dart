@@ -195,6 +195,7 @@ class _SendOtpFormState extends State<SendOtpForm> {
     );
   }
 
+
   /// Send OTP
   void _sendOtp() {
     if (_formKey.currentState?.validate() ?? false) {

@@ -1,9 +1,9 @@
 import 'package:get_it/get_it.dart';
+import '../../features/splash/splash_binding.dart';
 import '../config/app_config.dart';
 import '../locale/language_service.dart';
 import '../theme/theme_service.dart';
 import '../../features/auth/auth_binding.dart';
-
 
 /// App Binding for global dependency management using GetIt
 class AppBinding {
@@ -13,21 +13,19 @@ class AppBinding {
   static Future<void> initialize() async {
     // Initialize app configuration with auto-detection
     AppConfig.initialize(AppConfig.detectFlavor());
-    
+
     // Initialize theme service
     await ThemeService.loadInitialTheme();
-    
+
     // Register core services
-    _getIt.registerLazySingleton<ThemeService>(
-      () => ThemeService(),
-    );
+    _getIt.registerLazySingleton<ThemeService>(() => ThemeService());
 
     // Initialize language service and load saved language
     await LanguageService().initialize();
-    
-    // Initialize auth module dependencies
-    await AuthBinding.initialize();
 
+    // Initialize  module dependencies
+    await AuthBinding.initialize();
+    await SplashBinding.initialize();
   }
 
   /// Get theme service

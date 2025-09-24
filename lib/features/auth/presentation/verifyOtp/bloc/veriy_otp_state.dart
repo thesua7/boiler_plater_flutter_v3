@@ -1,4 +1,5 @@
 
+import 'package:boiler_plater_flutter_v3/features/auth/domain/entities/user_info_entity.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class VerifyOtpState extends Equatable{
@@ -19,8 +20,8 @@ class VerifyOtpLoading extends VerifyOtpState {
 }
 
 class VerifyOtpSuccess extends VerifyOtpState {
-  final String message;
-  const VerifyOtpSuccess({required this.message});
+  final UserInfoEntity user;
+  const VerifyOtpSuccess({required this.user});
 }
 
 class VerifyOtpError extends VerifyOtpState {

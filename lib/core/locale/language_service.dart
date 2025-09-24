@@ -1,3 +1,4 @@
+import 'package:boiler_plater_flutter_v3/core/constants/storage_constant.dart';
 import 'package:flutter/material.dart';
 import '../data/sharedPref/secure_storage.dart';
 
@@ -7,7 +8,7 @@ class LanguageService extends ChangeNotifier {
   factory LanguageService() => _instance;
   LanguageService._internal();
 
-  static const String _languageKey = 'selected_language';
+
   
   Locale _currentLocale = const Locale('en', '');
   bool _isInitialized = false;
@@ -20,7 +21,7 @@ class LanguageService extends ChangeNotifier {
     if (_isInitialized) return;
     
     try {
-      final savedLanguage = await SecureStorageHelper.read(_languageKey);
+      final savedLanguage = await SecureStorageHelper.read(StorageConstant.currentLanguage);
       if (savedLanguage != null && savedLanguage.isNotEmpty) {
         _currentLocale = Locale(savedLanguage, '');
       } else {
@@ -41,7 +42,7 @@ class LanguageService extends ChangeNotifier {
       _currentLocale = locale;
       
       try {
-        await SecureStorageHelper.write(_languageKey, locale.languageCode);
+        await SecureStorageHelper.write(StorageConstant.currentLanguage, locale.languageCode);
       } catch (e) {
         // If saving fails, still update the current locale
         // but log the error for debugging

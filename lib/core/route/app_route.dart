@@ -1,5 +1,7 @@
 // Simple GoRouter configuration
 import 'package:boiler_plater_flutter_v3/examplePages/responsive_demo_page.dart';
+import 'package:boiler_plater_flutter_v3/examplePages/theme_test_page.dart';
+import 'package:boiler_plater_flutter_v3/features/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -7,11 +9,13 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/auth_binding.dart';
 import '../../features/auth/presentation/sendOtp/send_otp_page.dart';
 import '../../features/auth/presentation/verifyOtp/verify_otp_page.dart';
+import '../../features/splash/splash_binding.dart';
+import '../../features/splash/splash_page.dart';
 import 'custom_transition.dart';
 import 'route_constant.dart';
 
 final GoRouter appRoute = GoRouter(
-  initialLocation: RouteConstant.home,
+  initialLocation: RouteConstant.splash,
   routes: [
     GoRoute(
       path: RouteConstant.sendOtp,
@@ -40,8 +44,29 @@ final GoRouter appRoute = GoRouter(
       path: RouteConstant.home,
       pageBuilder: (context, state) => AppTransitionWrapper.build(
         state: state,
-        child: ResponsiveDemoPage(),
-        transition: AppTransition.scaleWithFade, // optional override
+        child: HomePage(),
+        // transition: AppTransition.scaleWithFade, // optional override
+      ),
+    ),
+
+    GoRoute(
+      path: RouteConstant.testTheme,
+      pageBuilder: (context, state) => AppTransitionWrapper.build(
+        state: state,
+        child: ThemeTestPage(),
+        // transition: AppTransition.scaleWithFade, // optional override
+      ),
+    ),
+
+    GoRoute(
+      path: RouteConstant.splash,
+      pageBuilder: (context, state) => AppTransitionWrapper.build(
+        state: state,
+        child: BlocProvider(
+          create: (context) => SplashBinding.splashBloc,
+          child: const SplashPage(),
+        ),
+        // transition: AppTransition.fade, // optional override
       ),
     ),
   ],

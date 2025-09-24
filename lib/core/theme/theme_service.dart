@@ -1,8 +1,9 @@
+import 'package:boiler_plater_flutter_v3/core/constants/storage_constant.dart';
 import 'package:flutter/material.dart';
 import '../data/sharedPref/secure_storage.dart';
 
 class ThemeService extends ValueNotifier<ThemeMode> {
-  static const String _themeKey = 'theme_mode';
+
   static ThemeMode? _initialTheme;
   
   ThemeService() : super(_initialTheme ?? ThemeMode.system) {
@@ -12,7 +13,7 @@ class ThemeService extends ValueNotifier<ThemeMode> {
   /// Load theme from secure storage synchronously during app initialization
   static Future<ThemeMode> loadInitialTheme() async {
     try {
-      final savedTheme = await SecureStorageHelper.read(_themeKey);
+      final savedTheme = await SecureStorageHelper.read(StorageConstant.themeMode);
       if (savedTheme != null) {
         switch (savedTheme) {
           case 'light':
@@ -52,7 +53,7 @@ class ThemeService extends ValueNotifier<ThemeMode> {
           themeString = 'system';
           break;
       }
-      await SecureStorageHelper.write(_themeKey, themeString);
+      await SecureStorageHelper.write(StorageConstant.themeMode, themeString);
     } catch (e) {
       // Handle error silently or log it
       debugPrint('Error saving theme: $e');

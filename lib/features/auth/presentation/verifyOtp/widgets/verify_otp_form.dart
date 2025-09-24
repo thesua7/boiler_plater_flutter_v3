@@ -65,7 +65,7 @@ class _VerifyOtpFormState extends State<VerifyOtpForm> {
     return BlocConsumer<VerifyOtpBloc, VerifyOtpState>(
       listener: (context, state) {
         if (state is VerifyOtpSuccess) {
-          _showSuccessDialog(context, state.message);
+          _showSuccessDialog(context, "Verified Successfully");
         } else if (state is VerifyOtpError) {
           _showErrorSnackBar(context, state.message);
         }

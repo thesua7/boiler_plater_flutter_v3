@@ -1,9 +1,9 @@
+import 'package:boiler_plater_flutter_v3/core/constants/storage_constant.dart';
 import 'package:dio/dio.dart';
 import '../../sharedPref/secure_storage.dart';
 
 class AuthInterceptor extends Interceptor {
-  static const String _accessTokenKey = 'access_token';
-  static const String _refreshTokenKey = 'refresh_token';
+
 
   @override
   Future<void> onRequest(
@@ -11,7 +11,7 @@ class AuthInterceptor extends Interceptor {
       RequestInterceptorHandler handler,
       ) async {
     try {
-      final String? token = await SecureStorageHelper.read(_accessTokenKey);
+      final String? token = await SecureStorageHelper.read(StorageConstant.accessToken);
       if (token != null && token.isNotEmpty) {
         options.headers.putIfAbsent('Authorization', () => 'Bearer $token');
       }
@@ -31,13 +31,13 @@ class AuthInterceptor extends Interceptor {
     // Handle 401 Unauthorized - token might be expired
     if (err.response?.statusCode == 401) {
       try {
-        final String? refreshToken = await SecureStorageHelper.read(_refreshTokenKey);
+        final String? refreshToken = await SecureStorageHelper.read(StorageConstant.refreshToken);
         if (refreshToken != null && refreshToken.isNotEmpty) {
           // Try to refresh the token
           final bool refreshSuccess = await _refreshAccessToken(refreshToken);
           if (refreshSuccess) {
             // Retry the original request with new token
-            final String? newToken = await SecureStorageHelper.read(_accessTokenKey);
+            final String? newToken = await SecureStorageHelper.read(StorageConstant.accessToken);
             if (newToken != null && newToken.isNotEmpty) {
               err.requestOptions.headers['Authorization'] = 'Bearer $newToken';
               // Retry the request
