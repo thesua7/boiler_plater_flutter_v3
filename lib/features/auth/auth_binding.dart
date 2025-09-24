@@ -14,48 +14,89 @@ class AuthBinding {
 
   /// Initialize all auth dependencies
   static Future<void> initialize() async {
-    // Register Data Sources
-    _getIt.registerLazySingleton<AuthRemoteDataSource>(
-      () => AuthRemoteDataSource(),
-    );
+    try {
+      // Check if already initialized
+      if (isInitialized) {
+        return;
+      }
 
-    // Register Repository
-    _getIt.registerLazySingleton<AuthRepository>(
-      () => AuthRepoImpl(dataSource: _getIt<AuthRemoteDataSource>()),
-    );
+      // Register Data Sources
+      _getIt.registerLazySingleton<AuthRemoteDataSource>(
+        () => AuthRemoteDataSource(),
+      );
 
-    // Register Use Cases
-    _getIt.registerLazySingleton<SendOtpUseCase>(
-      () => SendOtpUseCase(repository: _getIt<AuthRepository>()),
-    );
-    _getIt.registerLazySingleton<VerifyOtpUseCase>(
-      () => VerifyOtpUseCase(repository: _getIt<AuthRepository>()),
-    );
+      // Register Repository
+      _getIt.registerLazySingleton<AuthRepository>(
+        () => AuthRepoImpl(dataSource: _getIt<AuthRemoteDataSource>()),
+      );
 
-    // Register BLoCs
-    _getIt.registerFactory<SendOtpBloc>(
-      () => SendOtpBloc(sendOtpUseCase: _getIt<SendOtpUseCase>()),
-    );
+      // Register Use Cases
+      _getIt.registerLazySingleton<SendOtpUseCase>(
+        () => SendOtpUseCase(repository: _getIt<AuthRepository>()),
+      );
+      
+      _getIt.registerLazySingleton<VerifyOtpUseCase>(
+        () => VerifyOtpUseCase(repository: _getIt<AuthRepository>()),
+      );
 
-    _getIt.registerFactory<VerifyOtpBloc>(
-      () => VerifyOtpBloc(verifyOtpUseCase: _getIt<VerifyOtpUseCase>()),
-    );
+      // Register BLoCs
+      _getIt.registerFactory<SendOtpBloc>(
+        () => SendOtpBloc(sendOtpUseCase: _getIt<SendOtpUseCase>()),
+      );
+
+      _getIt.registerFactory<VerifyOtpBloc>(
+        () => VerifyOtpBloc(verifyOtpUseCase: _getIt<VerifyOtpUseCase>()),
+      );
+    } catch (e, stackTrace) {
+      rethrow;
+    }
   }
 
   /// Get AuthRepository instance
-  static AuthRepository get authRepository => _getIt<AuthRepository>();
+  static AuthRepository get authRepository {
+    if (!_getIt.isRegistered<AuthRepository>()) {
+      throw StateError('AuthRepository not registered. Call initialize() first.');
+    }
+    return _getIt<AuthRepository>();
+  }
 
   /// Get SendOtpUseCase instance
-  static SendOtpUseCase get sendOtpUseCase => _getIt<SendOtpUseCase>();
-  static VerifyOtpUseCase get verifyOtpUseCase => _getIt<VerifyOtpUseCase>();
+  static SendOtpUseCase get sendOtpUseCase {
+    if (!_getIt.isRegistered<SendOtpUseCase>()) {
+      throw StateError('SendOtpUseCase not registered. Call initialize() first.');
+    }
+    return _getIt<SendOtpUseCase>();
+  }
+
+  static VerifyOtpUseCase get verifyOtpUseCase {
+    if (!_getIt.isRegistered<VerifyOtpUseCase>()) {
+      throw StateError('VerifyOtpUseCase not registered. Call initialize() first.');
+    }
+    return _getIt<VerifyOtpUseCase>();
+  }
 
   /// Get SendOtpBloc instance
-  static SendOtpBloc get sendOtpBloc => _getIt<SendOtpBloc>();
-  static VerifyOtpBloc get verifyOtpBloc => _getIt<VerifyOtpBloc>();
+  static SendOtpBloc get sendOtpBloc {
+    if (!_getIt.isRegistered<SendOtpBloc>()) {
+      throw StateError('SendOtpBloc not registered. Call initialize() first.');
+    }
+    return _getIt<SendOtpBloc>();
+  }
+
+  static VerifyOtpBloc get verifyOtpBloc {
+    if (!_getIt.isRegistered<VerifyOtpBloc>()) {
+      throw StateError('VerifyOtpBloc not registered. Call initialize() first.');
+    }
+    return _getIt<VerifyOtpBloc>();
+  }
 
   /// Reset all auth dependencies
   static Future<void> reset() async {
-    await _getIt.reset();
+    try {
+      await _getIt.reset();
+    } catch (e, stackTrace) {
+      rethrow;
+    }
   }
 
   /// Check if auth dependencies are registered

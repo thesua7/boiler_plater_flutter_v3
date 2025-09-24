@@ -11,30 +11,41 @@ class AppBinding {
 
   /// Initialize app binding
   static Future<void> initialize() async {
-    // Initialize app configuration with auto-detection
-    AppConfig.initialize(AppConfig.detectFlavor());
+    try {
+      // Initialize app configuration with auto-detection
+      AppConfig.initialize(AppConfig.detectFlavor());
 
-    // Initialize theme service
-    await ThemeService.loadInitialTheme();
+      // Initialize theme service
+      await ThemeService.loadInitialTheme();
 
-    // Register core services
-    _getIt.registerLazySingleton<ThemeService>(() => ThemeService());
+      // Register core services
+      _getIt.registerLazySingleton<ThemeService>(() => ThemeService());
 
-    // Initialize language service and load saved language
-    await LanguageService().initialize();
-
-    // Initialize  module dependencies
-    await AuthBinding.initialize();
-    await SplashBinding.initialize();
+      // Initialize language service and load saved language
+      await LanguageService().initialize();
+    } catch (e, stackTrace) {
+      rethrow;
+    }
   }
 
   /// Get theme service
-  static ThemeService get themeService => _getIt<ThemeService>();
+  static ThemeService get themeService {
+    if (!_getIt.isRegistered<ThemeService>()) {
+      throw StateError('ThemeService not registered. Call initialize() first.');
+    }
+    return _getIt<ThemeService>();
+  }
 
   /// Reset all services (useful for testing)
   static Future<void> reset() async {
-    _getIt<ThemeService>().dispose();
-    await _getIt.reset();
+    try {
+      if (_getIt.isRegistered<ThemeService>()) {
+        _getIt<ThemeService>().dispose();
+      }
+      await _getIt.reset();
+    } catch (e, stackTrace) {
+      rethrow;
+    }
   }
 
   /// Check if app binding is initialized

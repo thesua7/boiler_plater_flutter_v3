@@ -35,6 +35,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Cache services to prevent multiple accesses
     final themeService = AppBinding.themeService;
     final languageService = LanguageService();
 

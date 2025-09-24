@@ -1,4 +1,4 @@
-// Simple GoRouter configuration
+// Optimized GoRouter configuration with lazy BLoC creation
 import 'package:boiler_plater_flutter_v3/examplePages/responsive_demo_page.dart';
 import 'package:boiler_plater_flutter_v3/examplePages/theme_test_page.dart';
 import 'package:boiler_plater_flutter_v3/features/home/home_page.dart';
@@ -22,7 +22,13 @@ final GoRouter appRoute = GoRouter(
       pageBuilder: (context, state) => AppTransitionWrapper.build(
         state: state,
         child: BlocProvider(
-          create: (context) => AuthBinding.sendOtpBloc,
+          create: (context) {
+            // Initialize AuthBinding on-demand when this route is accessed
+            if (!AuthBinding.isInitialized) {
+              AuthBinding.initialize();
+            }
+            return AuthBinding.sendOtpBloc;
+          },
           child: const SendOtpPage(),
         ),
       ),
@@ -32,7 +38,13 @@ final GoRouter appRoute = GoRouter(
       pageBuilder: (context, state) => AppTransitionWrapper.build(
         state: state,
         child: BlocProvider(
-          create: (context) => AuthBinding.verifyOtpBloc,
+          create: (context) {
+            // Initialize AuthBinding on-demand when this route is accessed
+            if (!AuthBinding.isInitialized) {
+              AuthBinding.initialize();
+            }
+            return AuthBinding.verifyOtpBloc;
+          },
           child: VerifyOtpPage(
             phoneNumber: state.uri.queryParameters['phone'] ?? '',
           ),
@@ -63,7 +75,13 @@ final GoRouter appRoute = GoRouter(
       pageBuilder: (context, state) => AppTransitionWrapper.build(
         state: state,
         child: BlocProvider(
-          create: (context) => SplashBinding.splashBloc,
+          create: (context) {
+            // Initialize SplashBinding on-demand when this route is accessed
+            if (!SplashBinding.isInitialized) {
+              SplashBinding.initialize();
+            }
+            return SplashBinding.splashBloc;
+          },
           child: const SplashPage(),
         ),
         // transition: AppTransition.fade, // optional override
