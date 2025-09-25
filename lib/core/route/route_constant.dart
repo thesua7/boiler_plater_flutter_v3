@@ -9,6 +9,7 @@ class RouteConstant {
   static const String sendOtp = '/send-otp';
   static const String verifyOtp = '/verify-otp';
   static const String testTheme = '/testTheme';
+  static const String screenUtilDemo = '/screenutil-demo';
 
   // Home
   static const String home = '/home';

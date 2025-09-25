@@ -1,5 +1,5 @@
 // Optimized GoRouter configuration with lazy BLoC creation
-import 'package:boiler_plater_flutter_v3/examplePages/responsive_demo_page.dart';
+import 'package:boiler_plater_flutter_v3/examplePages/screenutil_demo_page.dart';
 import 'package:boiler_plater_flutter_v3/examplePages/theme_test_page.dart';
 import 'package:boiler_plater_flutter_v3/features/home/home_page.dart';
 import 'package:flutter/material.dart';
@@ -83,6 +83,14 @@ final GoRouter appRoute = GoRouter(
       pageBuilder: (context, state) => AppTransitionWrapper.build(
         state: state,
         child: ThemeTestPage(),
+        // transition: AppTransition.scaleWithFade, // optional override
+      ),
+    ),
+    GoRoute(
+      path: RouteConstant.screenUtilDemo,
+      pageBuilder: (context, state) => AppTransitionWrapper.build(
+        state: state,
+        child: const ScreenUtilDemoPage(),
         // transition: AppTransition.scaleWithFade, // optional override
       ),
     ),

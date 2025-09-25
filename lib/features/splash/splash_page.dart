@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../core/route/route_constant.dart';
-import '../../core/responsive/responsive_utils.dart';
 import 'bloc/splash_bloc.dart';
 import 'bloc/splash_event.dart';
 import 'bloc/splash_state.dart';
@@ -77,8 +77,8 @@ class _SplashPageState extends State<SplashPage>
                     ScaleTransition(
                       scale: _animation,
                       child: Container(
-                        width: ResponsiveUtils.getResponsiveWidth(context, 120),
-                        height: ResponsiveUtils.getResponsiveWidth(context, 120),
+                        width: 120.w,
+                        height: 120.w,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.white,
@@ -92,12 +92,12 @@ class _SplashPageState extends State<SplashPage>
                         ),
                         child: Icon(
                           Icons.flutter_dash,
-                          size: ResponsiveUtils.getResponsiveFontSize(context, 64),
+                          size: 64.sp,
                           color: Theme.of(context).primaryColor,
                         ),
                       ),
                     ),
-                    SizedBox(height: ResponsiveUtils.getResponsiveHeight(context, 24)),
+                    SizedBox(height: 24.h),
 
                     // App Name
                     FadeTransition(
@@ -105,14 +105,14 @@ class _SplashPageState extends State<SplashPage>
                       child: Text(
                         'Boiler Plate',
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 28),
+                          fontSize: 28.sp,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                           letterSpacing: 1.2,
                         ),
                       ),
                     ),
-                    SizedBox(height: ResponsiveUtils.getResponsiveHeight(context, 8)),
+                    SizedBox(height: 8.h),
 
                     // Subtitle
                     FadeTransition(
@@ -120,12 +120,12 @@ class _SplashPageState extends State<SplashPage>
                       child: Text(
                         'Flutter V3',
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                          fontSize: 16.sp,
                           color: Colors.white.withOpacity(0.85),
                         ),
                       ),
                     ),
-                    SizedBox(height: ResponsiveUtils.getResponsiveHeight(context, 40)),
+                    SizedBox(height: 40.h),
 
                     // Simple Loading Indicator
                     CircularProgressIndicator(
