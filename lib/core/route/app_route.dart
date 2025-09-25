@@ -18,6 +18,23 @@ final GoRouter appRoute = GoRouter(
   initialLocation: RouteConstant.splash,
   routes: [
     GoRoute(
+      path: RouteConstant.splash,
+      pageBuilder: (context, state) => AppTransitionWrapper.build(
+        state: state,
+        child: BlocProvider(
+          create: (context) {
+            // Initialize SplashBinding on-demand when this route is accessed
+            if (!SplashBinding.isInitialized) {
+              SplashBinding.initialize();
+            }
+            return SplashBinding.splashBloc;
+          },
+          child: const SplashPage(),
+        ),
+        // transition: AppTransition.fade, // optional override
+      ),
+    ),
+    GoRoute(
       path: RouteConstant.sendOtp,
       pageBuilder: (context, state) => AppTransitionWrapper.build(
         state: state,
@@ -67,24 +84,6 @@ final GoRouter appRoute = GoRouter(
         state: state,
         child: ThemeTestPage(),
         // transition: AppTransition.scaleWithFade, // optional override
-      ),
-    ),
-
-    GoRoute(
-      path: RouteConstant.splash,
-      pageBuilder: (context, state) => AppTransitionWrapper.build(
-        state: state,
-        child: BlocProvider(
-          create: (context) {
-            // Initialize SplashBinding on-demand when this route is accessed
-            if (!SplashBinding.isInitialized) {
-              SplashBinding.initialize();
-            }
-            return SplashBinding.splashBloc;
-          },
-          child: const SplashPage(),
-        ),
-        // transition: AppTransition.fade, // optional override
       ),
     ),
   ],

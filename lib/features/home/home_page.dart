@@ -10,17 +10,17 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Scaffold(body: Center(
       child: ElevatedButton(
         onPressed: ()  {
-           SecureStorageHelper.delete(StorageConstant.isLoggedIn);
-           SecureStorageHelper.delete(StorageConstant.accessToken);
-           SecureStorageHelper.delete(StorageConstant.refreshToken);
+          SecureStorageHelper.delete(StorageConstant.isLoggedIn);
+          SecureStorageHelper.delete(StorageConstant.accessToken);
+          SecureStorageHelper.delete(StorageConstant.refreshToken);
 
           context.go(RouteConstant.sendOtp);
         },
         child: const Text("LogOut"),
       ),
-    );
+    ),);
   }
 }

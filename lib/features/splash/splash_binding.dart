@@ -1,13 +1,13 @@
 import 'package:get_it/get_it.dart';
 import 'bloc/splash_bloc.dart';
+import '../../core/di/base_binding.dart';
 
-class SplashBinding {
-  static final GetIt _getIt = GetIt.instance;
+class SplashBinding extends BaseBinding {
 
   static Future<void> initialize() async {
     try {
       if (!isInitialized) {
-        _getIt.registerFactory<SplashBloc>(() => SplashBloc());
+        BaseBinding.registerFactory<SplashBloc>(() => SplashBloc());
       }
     } catch (e, stackTrace) {
       rethrow;
@@ -15,22 +15,13 @@ class SplashBinding {
   }
 
   /// Get SplashBloc instance
-  static SplashBloc get splashBloc {
-    if (!_getIt.isRegistered<SplashBloc>()) {
-      throw StateError('SplashBloc not registered. Call initialize() first.');
-    }
-    return _getIt<SplashBloc>();
-  }
+  static SplashBloc get splashBloc => BaseBinding.get<SplashBloc>();
 
   /// Reset Splash module
   static Future<void> reset() async {
-    try {
-      await _getIt.reset();
-    } catch (e, stackTrace) {
-      rethrow;
-    }
+    await BaseBinding.reset();
   }
 
   /// Check if splash dependencies are registered
-  static bool get isInitialized => _getIt.isRegistered<SplashBloc>();
+  static bool get isInitialized => BaseBinding.isRegistered<SplashBloc>();
 }

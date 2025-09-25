@@ -15,7 +15,7 @@ enum AppTransition {
 }
 
 class AppTransitionWrapper<T> {
-  static AppTransition defaultTransition = AppTransition.rightToLeft;
+  static AppTransition defaultTransition = AppTransition.rightToLeftWithFade;
 
   /// Wrapper to use in all GoRoute pageBuilders
   static CustomTransitionPage<T> build<T>({
