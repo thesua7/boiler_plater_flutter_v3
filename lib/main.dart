@@ -8,7 +8,7 @@ import 'core/di/app_binding.dart';
 import 'core/config/app_config.dart';
 import 'core/locale/language_service.dart';
 import 'core/responsive/responsive.dart';
-
+import 'core/theme/theme_service.dart';
 import 'l10n/app_localizations.dart';
 
 void main() async {
@@ -61,14 +61,17 @@ class MyApp extends StatelessWidget {
               routerConfig: appRoute,
               debugShowCheckedModeBanner: AppConfig.enableDebugMode,
               builder: (context, child) {
-                return ResponsiveLayout(
-                  child: MediaQuery(
-                    data: MediaQuery.of(context).copyWith(
-                      textScaler: TextScaler.linear(
-                        MediaQuery.of(context).textScaleFactor.clamp(0.8, 1.2),
+                return AnnotatedRegion<SystemUiOverlayStyle>(
+                  value: getSystemUIOverlayStyle(themeMode),
+                  child: ResponsiveLayout(
+                    child: MediaQuery(
+                      data: MediaQuery.of(context).copyWith(
+                        textScaler: TextScaler.linear(
+                          MediaQuery.of(context).textScaleFactor.clamp(0.8, 1.2),
+                        ),
                       ),
+                      child: child!,
                     ),
-                    child: child!,
                   ),
                 );
               },

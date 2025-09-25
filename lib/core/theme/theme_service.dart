@@ -1,5 +1,7 @@
 import 'package:boiler_plater_flutter_v3/core/constants/storage_constant.dart';
+import 'package:boiler_plater_flutter_v3/core/constants/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../data/sharedPref/secure_storage.dart';
 
 class ThemeService extends ValueNotifier<ThemeMode> {
@@ -8,6 +10,15 @@ class ThemeService extends ValueNotifier<ThemeMode> {
   
   ThemeService() : super(_initialTheme ?? ThemeMode.system) {
     // Theme is already loaded in main() before this constructor is called
+    // Set initial system UI overlay style
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setSystemUIOverlayStyle(value);
+    });
+    
+    // Listen to theme changes and update system UI overlay style
+    addListener(() {
+      setSystemUIOverlayStyle(value);
+    });
   }
 
   /// Load theme from secure storage synchronously during app initialization
@@ -64,6 +75,7 @@ class ThemeService extends ValueNotifier<ThemeMode> {
   Future<void> setThemeMode(ThemeMode themeMode) async {
     value = themeMode;
     await _saveTheme(themeMode);
+    // System UI overlay style will be updated automatically by the listener
   }
 
   /// Toggle between light and dark mode (ignores system mode)
@@ -112,5 +124,79 @@ class ThemeService extends ValueNotifier<ThemeMode> {
   @override
   void dispose() {
     super.dispose();
+  }
+}
+
+/// Set system UI overlay style based on theme mode
+void setSystemUIOverlayStyle(ThemeMode themeMode) {
+  // Determine if we should use dark or light theme
+  bool isDark;
+
+  if (themeMode == ThemeMode.dark) {
+    isDark = true;
+  } else if (themeMode == ThemeMode.light) {
+    isDark = false;
+  } else {
+    // For ThemeMode.system, check the system brightness
+    isDark = WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark;
+  }
+
+  if (isDark) {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: ColorConstant.dark,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.light,
+        systemNavigationBarColor: ColorConstant.dark,
+        systemNavigationBarIconBrightness: Brightness.light,
+        systemNavigationBarDividerColor: Colors.transparent,
+      ),
+    );
+  } else {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.white,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.dark,
+        systemNavigationBarColor: Colors.white,
+        systemNavigationBarIconBrightness: Brightness.dark,
+        systemNavigationBarDividerColor: Colors.transparent,
+      ),
+    );
+  }
+}
+
+/// Get system UI overlay style based on theme mode (for AnnotatedRegion)
+SystemUiOverlayStyle getSystemUIOverlayStyle(ThemeMode themeMode) {
+  // Determine if we should use dark or light theme
+  bool isDark;
+
+  if (themeMode == ThemeMode.dark) {
+    isDark = true;
+  } else if (themeMode == ThemeMode.light) {
+    isDark = false;
+  } else {
+    // For ThemeMode.system, check the system brightness
+    isDark = WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark;
+  }
+
+  if (isDark) {
+    return const SystemUiOverlayStyle(
+      statusBarColor: ColorConstant.dark,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.light,
+      systemNavigationBarColor: ColorConstant.dark,
+      systemNavigationBarIconBrightness: Brightness.light,
+      systemNavigationBarDividerColor: Colors.transparent,
+    );
+  } else {
+    return const SystemUiOverlayStyle(
+      statusBarColor: Colors.white,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarIconBrightness: Brightness.dark,
+      systemNavigationBarDividerColor: Colors.transparent,
+    );
   }
 }
