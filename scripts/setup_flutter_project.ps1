@@ -581,8 +581,8 @@ scripts
             $content = $content -replace 'APPLICATION_ID "com\.thesua7\.', "APPLICATION_ID `"$FinalPackageName"
             $content = $content -replace 'set\(APPLICATION_ID "com\.thesua7\.', "set(APPLICATION_ID `"$FinalPackageName"
             # Replace ALL instances of boiler_plater_flutter_v3 with project name (MUST BE LAST)
-            # Use regex with global flag to ensure ALL instances are replaced
-            $content = [regex]::Replace($content, "boiler_plater_flutter_v3", $ProjectName, "Global")
+            # Use simple -replace which is global by default
+            $content = $content -replace "boiler_plater_flutter_v3", $ProjectName
             
             # Debug: Check if this is my_application.cc after replacement
             if ($_.Name -eq "my_application.cc") {
