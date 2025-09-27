@@ -542,7 +542,7 @@ scripts
     
     # Update any remaining files with boilerplate references
     Write-Log "  - Updating any remaining files with boilerplate references..." $Colors.Blue
-    Get-ChildItem -Path $ProjectPath -Recurse -Include "*.dart", "*.kt", "*.xml", "*.yaml", "*.yml", "*.json", "*.md", "*.txt", "*.plist", "*.pbxproj", "*.xcconfig", "*.cmake", "*.rc", "CMakeLists.txt" | ForEach-Object {
+    Get-ChildItem -Path $ProjectPath -Recurse -Include "*.dart", "*.kt", "*.xml", "*.yaml", "*.yml", "*.json", "*.md", "*.txt", "*.plist", "*.pbxproj", "*.xcconfig", "*.cmake", "*.rc", "*.cpp", "*.h", "*.c", "*.html", "*.xcscheme", "CMakeLists.txt" | ForEach-Object {
         Write-Log "    - Checking $($_.Name)..." $Colors.Blue
         if (Test-Path $_.FullName) {
             $content = Get-Content $_.FullName -Raw
@@ -565,6 +565,11 @@ scripts
             $content = $content -replace "BuildableName = `"boiler_plater_flutter_v3\.app`"", "BuildableName = `"$ProjectName.app`""
             $content = $content -replace "boiler_plater_flutter_v3\.app", "$ProjectName.app"
             $content = $content -replace "boiler_plater_flutter_v3\.exe", "$ProjectName.exe"
+            $content = $content -replace 'apple-mobile-web-app-title" content="boiler_plater_flutter_v3"', "apple-mobile-web-app-title`" content=`"$ProjectName`""
+            $content = $content -replace 'gtk_header_bar_set_title\(header_bar, "boiler_plater_flutter_v3"\)', "gtk_header_bar_set_title(header_bar, `"$ProjectName`")"
+            $content = $content -replace 'gtk_window_set_title\(window, "boiler_plater_flutter_v3"\)', "gtk_window_set_title(window, `"$ProjectName`")"
+            $content = $content -replace 'window\.Create\(L"boiler_plater_flutter_v3"', "window.Create(L`"$ProjectName`""
+            $content = $content -replace 'g_set_prgname\(APPLICATION_ID\)', "g_set_prgname(`"$ProjectName`")"
             if ($content -ne $originalContent) {
                 Set-Content $_.FullName $content -NoNewline
                 Write-Success "      Updated $($_.Name)"
