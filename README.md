@@ -154,7 +154,21 @@ lib/
 
 ### Quick Start - Create New Project
 
-**🚀 Use the Project Generator (Recommended)**
+**🚀 One-Command Setup (Recommended)**
+
+Generate a new Flutter project instantly with a single command:
+
+**Windows (PowerShell):**
+```powershell
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/thesua7/boiler_plater_flutter_v3/master/scripts/setup_flutter_project.ps1" | Invoke-Expression
+```
+
+**Linux/macOS (Bash):**
+```bash
+curl -fsSL https://raw.githubusercontent.com/thesua7/boiler_plater_flutter_v3/master/scripts/setup_flutter_project.sh | bash
+```
+
+**📁 Local Project Generator**
 
 1. **Double-click** `create_new_project.bat` in the root directory
 2. **Follow the prompts** to create your new Flutter project
@@ -185,14 +199,18 @@ lib/
 
 ### Project Generator Features
 
-The included project generator (`scripts/create_flutter_project.bat`) automatically:
+The project generator automatically:
 - ✅ Creates new Flutter projects using this boilerplate as template
 - ✅ Updates all configuration files with your project details
 - ✅ Installs dependencies and generates localizations
 - ✅ Sets up multi-environment configuration
 - ✅ Provides comprehensive error handling and validation
+- ✅ Updates macOS and Windows specific files (BuildableName, bundle identifiers, etc.)
+- ✅ Handles C++ files (main.cpp, my_application.cc) with proper string replacements
 
-**Usage**: Double-click `create_new_project.bat` or run `scripts/create_flutter_project.bat`
+**Usage Options**:
+- **One-Command**: Use the curl commands above for instant setup
+- **Local**: Double-click `create_new_project.bat` or run `scripts/create_flutter_project.bat`
 
 ## 🎯 Environment Configuration
 
