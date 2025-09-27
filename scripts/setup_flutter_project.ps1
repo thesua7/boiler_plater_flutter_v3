@@ -107,7 +107,7 @@ function Update-AllFiles {
     
     if (Test-Path $Directory) {
         Get-ChildItem -Path $Directory -Recurse -Include $FilePattern | ForEach-Object {
-            Update-FileContent $_.FullName $OldValue $NewValue
+            Update-FileContent $_.FullName $OldValue $NewValue | Out-Null
         }
     }
 }
@@ -325,7 +325,7 @@ function Main {
         # Move and update MainActivity.kt
         $NewMainActivityPath = Join-Path $NewPackageDir "MainActivity.kt"
         Copy-Item $OldMainActivityPath $NewMainActivityPath
-        Update-FileContent $NewMainActivityPath "com.thesua7.boiler_plater_flutter_v3" $FinalPackageName
+        Update-FileContent $NewMainActivityPath "com.thesua7.boiler_plater_flutter_v3" $FinalPackageName | Out-Null
         
         # Remove old package directory
         Remove-Item -Path "$ProjectPath\android\app\src\main\kotlin\com" -Recurse -Force -ErrorAction SilentlyContinue
