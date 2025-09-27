@@ -560,11 +560,8 @@ scripts
             
             # Debug: Check if this is my_application.cc
             if ($_.Name -eq "my_application.cc") {
-                $matches = [regex]::Matches($content, "boiler_plater_flutter_v3")
-                Write-Log "      - Processing my_application.cc - Found $($matches.Count) instances of boiler_plater_flutter_v3" $Colors.Yellow
-                if ($matches.Count -gt 0) {
-                    Write-Log "      - Instances found at lines: $($matches | ForEach-Object { $_.Index })" $Colors.Yellow
-                }
+                $matchCount = ($content | Select-String "boiler_plater_flutter_v3" -AllMatches).Matches.Count
+                Write-Log "      - Processing my_application.cc - Found $matchCount instances of boiler_plater_flutter_v3" $Colors.Yellow
             }
             $content = $content -replace "package:boiler_plater_flutter_v3/", "package:$ProjectName/"
             $content = $content -replace "Boiler Plate Dev", "$ProjectName Dev"
@@ -586,11 +583,8 @@ scripts
             
             # Debug: Check if this is my_application.cc after replacement
             if ($_.Name -eq "my_application.cc") {
-                $matchesAfter = [regex]::Matches($content, "boiler_plater_flutter_v3")
-                Write-Log "      - After replacement: Found $($matchesAfter.Count) instances of boiler_plater_flutter_v3" $Colors.Yellow
-                if ($matchesAfter.Count -gt 0) {
-                    Write-Log "      - Remaining instances at lines: $($matchesAfter | ForEach-Object { $_.Index })" $Colors.Yellow
-                }
+                $matchCountAfter = ($content | Select-String "boiler_plater_flutter_v3" -AllMatches).Matches.Count
+                Write-Log "      - After replacement: Found $matchCountAfter instances of boiler_plater_flutter_v3" $Colors.Yellow
             }
             
             if ($content -ne $originalContent) {
