@@ -548,7 +548,6 @@ scripts
             $content = Get-Content $_.FullName -Raw
             $originalContent = $content
             $content = $content -replace "package:boiler_plater_flutter_v3/", "package:$ProjectName/"
-            $content = $content -replace "boiler_plater_flutter_v3", $ProjectName
             $content = $content -replace "Boiler Plate Dev", "$ProjectName Dev"
             $content = $content -replace "Boiler Plate Staging", "$ProjectName Staging"
             $content = $content -replace "Boiler Plate", $ProjectName
@@ -562,14 +561,8 @@ scripts
             $content = $content -replace "com\.thesua7\.", $FinalPackageName
             $content = $content -replace 'APPLICATION_ID "com\.thesua7\.', "APPLICATION_ID `"$FinalPackageName"
             $content = $content -replace 'set\(APPLICATION_ID "com\.thesua7\.', "set(APPLICATION_ID `"$FinalPackageName"
-            $content = $content -replace "BuildableName = `"boiler_plater_flutter_v3\.app`"", "BuildableName = `"$ProjectName.app`""
-            $content = $content -replace "boiler_plater_flutter_v3\.app", "$ProjectName.app"
-            $content = $content -replace "boiler_plater_flutter_v3\.exe", "$ProjectName.exe"
-            $content = $content -replace 'apple-mobile-web-app-title" content="boiler_plater_flutter_v3"', "apple-mobile-web-app-title`" content=`"$ProjectName`""
-            $content = $content -replace 'gtk_header_bar_set_title\(header_bar, "boiler_plater_flutter_v3"\)', "gtk_header_bar_set_title(header_bar, `"$ProjectName`")"
-            $content = $content -replace 'gtk_window_set_title\(window, "boiler_plater_flutter_v3"\)', "gtk_window_set_title(window, `"$ProjectName`")"
-            $content = $content -replace 'window\.Create\(L"boiler_plater_flutter_v3"', "window.Create(L`"$ProjectName`""
-            $content = $content -replace 'g_set_prgname\(APPLICATION_ID\)', "g_set_prgname(`"$ProjectName`")"
+            # Replace ALL instances of boiler_plater_flutter_v3 with project name (MUST BE LAST)
+            $content = $content -replace "boiler_plater_flutter_v3", $ProjectName
             if ($content -ne $originalContent) {
                 Set-Content $_.FullName $content -NoNewline
                 Write-Success "      Updated $($_.Name)"
