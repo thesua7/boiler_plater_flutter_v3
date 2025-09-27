@@ -544,22 +544,15 @@ scripts
     Write-Log "  - Updating any remaining files with boilerplate references..." $Colors.Blue
     
     # Get ALL files that might contain boilerplate references
-    $allFiles = Get-ChildItem -Path $ProjectPath -Recurse -File | Where-Object { 
-        $_.Name -notmatch "\.(lock|log)$" -and 
-        $_.FullName -notmatch "\\build\\" -and 
-        $_.FullName -notmatch "\\.git\\" -and 
-        $_.FullName -notmatch "\\.dart_tool\\" -and
-        $_.Extension -match "\.(dart|kt|xml|yaml|yml|json|md|txt|plist|pbxproj|xcconfig|cmake|rc|cpp|h|c|cc|html|xcscheme)$" -or
-        $_.Name -eq "CMakeLists.txt"
-    }
+    $filesToProcess = Get-ChildItem -Path $ProjectPath -Recurse -Include "*.dart", "*.kt", "*.xml", "*.yaml", "*.yml", "*.json", "*.md", "*.txt", "*.plist", "*.pbxproj", "*.xcconfig", "*.cmake", "*.rc", "*.cpp", "*.h", "*.c", "*.cc", "*.html", "*.xcscheme", "CMakeLists.txt" | Where-Object { $_.Name -notmatch "\.(lock|log)$" -and $_.FullName -notmatch "\\build\\" -and $_.FullName -notmatch "\\.git\\" -and $_.FullName -notmatch "\\.dart_tool\\" }
     
-    Write-Log "  - Found $($allFiles.Count) files to process..." $Colors.Blue
+    Write-Log "  - Found $($filesToProcess.Count) files to process..." $Colors.Blue
     
     # Debug: Show all .cc files found
-    $ccFiles = $allFiles | Where-Object { $_.Extension -eq ".cc" }
+    $ccFiles = $filesToProcess | Where-Object { $_.Extension -eq ".cc" }
     Write-Log "  - Found $($ccFiles.Count) .cc files: $($ccFiles.Name -join ', ')" $Colors.Yellow
     
-    $allFiles | ForEach-Object {
+    $filesToProcess | ForEach-Object {
         Write-Log "    - Checking $($_.Name)..." $Colors.Blue
         if (Test-Path $_.FullName) {
             $content = Get-Content $_.FullName -Raw
