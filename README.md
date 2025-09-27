@@ -152,7 +152,15 @@ lib/
 - Android Studio / VS Code
 - Git
 
-### Installation Steps
+### Quick Start - Create New Project
+
+**🚀 Use the Project Generator (Recommended)**
+
+1. **Double-click** `create_new_project.bat` in the root directory
+2. **Follow the prompts** to create your new Flutter project
+3. **Start coding** immediately with a fully configured project
+
+**📁 Manual Setup (For Development)**
 
 1. **Clone the repository**
    ```bash
@@ -174,6 +182,17 @@ lib/
    ```bash
    flutter run
    ```
+
+### Project Generator Features
+
+The included project generator (`scripts/create_flutter_project.bat`) automatically:
+- ✅ Creates new Flutter projects using this boilerplate as template
+- ✅ Updates all configuration files with your project details
+- ✅ Installs dependencies and generates localizations
+- ✅ Sets up multi-environment configuration
+- ✅ Provides comprehensive error handling and validation
+
+**Usage**: Double-click `create_new_project.bat` or run `scripts/create_flutter_project.bat`
 
 ## 🎯 Environment Configuration
 
