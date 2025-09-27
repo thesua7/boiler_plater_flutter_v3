@@ -68,6 +68,14 @@ if exist "%PROJECT_PATH%" (
         pause
         exit /b 1
     )
+:: Check if we're running from a downloaded temp file
+if "%~dp0"=="%TEMP%\" (
+    echo ERROR: Cannot run directly from temp directory
+    echo Please run this script from the actual boilerplate project directory
+    echo Or use the install_and_run.bat script instead
+    pause
+    exit /b 1
+)
 set "BOILERPLATE_DIR=%~dp0.."
 
 echo.
