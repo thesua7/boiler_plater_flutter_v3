@@ -244,32 +244,44 @@ function Main {
             "node_modules"
         )
         
-        # Use robocopy with proper path handling (like the working batch script)
-        Write-Log "Using robocopy for reliable file copying..." $Colors.Blue
+        # Use xcopy directly (more reliable for paths with spaces)
+        Write-Log "Using xcopy for reliable file copying..." $Colors.Blue
         
-        # Create robocopy command with proper quoting for paths with spaces
-        $robocopyCmd = "robocopy `"$($ExtractedDir.FullName)`" `"$ProjectPath`" /E /XD .git .idea .dart_tool .vscode .fvm build scripts /XF *.lock pubspec.lock /NFL /NDL /NJH /NJS"
+        # Create exclude list file (like your working script)
+        $excludeListPath = Join-Path $TempDir "exclude_list.txt"
+        $excludeListContent = @"
+.git
+.idea
+.dart_tool
+.vscode
+.fvm
+.DS_Store
+pubspec.lock
+*.lock
+build
+scripts
+"@
+        Set-Content -Path $excludeListPath -Value $excludeListContent
         
-        Write-Log "Robocopy command: $robocopyCmd" $Colors.Blue
+        # Use xcopy with exclude list (like your working script)
+        $xcopyCmd = "xcopy `"$($ExtractedDir.FullName)\*`" `"$ProjectPath\`" /E /I /H /Y /EXCLUDE:`"$excludeListPath`""
+        Write-Log "Xcopy command: $xcopyCmd" $Colors.Blue
         
-        # Execute robocopy using cmd
-        $robocopyResult = cmd /c $robocopyCmd
-        $robocopyExitCode = $LASTEXITCODE
+        $xcopyResult = cmd /c $xcopyCmd
+        $xcopyExitCode = $LASTEXITCODE
+        Write-Log "Xcopy exit code: $xcopyExitCode" $Colors.Blue
         
-        Write-Log "Robocopy exit code: $robocopyExitCode" $Colors.Blue
-        
-        # Robocopy returns 0-7 for success, 8+ for errors
-        if ($robocopyExitCode -gt 7) {
-            Write-Warning "Robocopy failed, trying xcopy fallback..."
-            # Fallback to xcopy (like your working script)
-            $xcopyCmd = "xcopy `"$($ExtractedDir.FullName)\*`" `"$ProjectPath\`" /E /I /H /Y"
-            Write-Log "Xcopy command: $xcopyCmd" $Colors.Blue
-            cmd /c $xcopyCmd
-            $xcopyExitCode = $LASTEXITCODE
-            Write-Log "Xcopy exit code: $xcopyExitCode" $Colors.Blue
+        if ($xcopyExitCode -ne 0) {
+            Write-Warning "Xcopy failed, trying robocopy fallback..."
+            # Fallback to robocopy
+            $robocopyCmd = "robocopy `"$($ExtractedDir.FullName)`" `"$ProjectPath`" /E /XD .git .idea .dart_tool .vscode .fvm build scripts /XF *.lock pubspec.lock /NFL /NDL /NJH /NJS"
+            Write-Log "Robocopy command: $robocopyCmd" $Colors.Blue
+            cmd /c $robocopyCmd
+            $robocopyExitCode = $LASTEXITCODE
+            Write-Log "Robocopy exit code: $robocopyExitCode" $Colors.Blue
             
-            if ($xcopyExitCode -ne 0) {
-                Write-Warning "Xcopy also failed, trying PowerShell copy..."
+            if ($robocopyExitCode -gt 7) {
+                Write-Warning "Robocopy also failed, trying PowerShell copy..."
                 # Final fallback to PowerShell copy
                 Get-ChildItem -Path $ExtractedDir.FullName -Recurse | ForEach-Object {
                     $relativePath = $_.FullName.Substring($ExtractedDir.FullName.Length + 1)
@@ -297,8 +309,11 @@ function Main {
                 }
             }
         } else {
-            Write-Log "Robocopy completed successfully" $Colors.Blue
+            Write-Log "Xcopy completed successfully" $Colors.Blue
         }
+        
+        # Clean up exclude list
+        Remove-Item $excludeListPath -Force -ErrorAction SilentlyContinue
         
         Write-Success "Project files copied successfully"
         
