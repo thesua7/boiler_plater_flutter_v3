@@ -244,30 +244,49 @@ function Main {
             "node_modules"
         )
         
-        # Copy all files except excluded ones
-        Get-ChildItem -Path $ExtractedDir.FullName -Recurse | ForEach-Object {
-            $relativePath = $_.FullName.Substring($ExtractedDir.FullName.Length + 1)
-            $shouldExclude = $false
-            
-            foreach ($excludeItem in $ExcludeItems) {
-                if ($relativePath -like "*$excludeItem*") {
-                    $shouldExclude = $true
-                    break
+        # Use robocopy for reliable copying (like the working batch script)
+        Write-Log "Using robocopy for reliable file copying..." $Colors.Blue
+        $robocopyArgs = @(
+            $ExtractedDir.FullName,
+            $ProjectPath,
+            "/E", "/XD", ".git", ".idea", ".dart_tool", ".vscode", ".fvm", "build", "scripts",
+            "/XF", "*.lock", "pubspec.lock",
+            "/NFL", "/NDL", "/NJH", "/NJS"
+        )
+        
+        $robocopyProcess = Start-Process -FilePath "robocopy" -ArgumentList $robocopyArgs -Wait -PassThru -NoNewWindow
+        $robocopyExitCode = $robocopyProcess.ExitCode
+        
+        # Robocopy returns 0-7 for success, 8+ for errors
+        if ($robocopyExitCode -gt 7) {
+            Write-Warning "Robocopy failed, trying PowerShell copy..."
+            # Fallback to PowerShell copy
+            Get-ChildItem -Path $ExtractedDir.FullName -Recurse | ForEach-Object {
+                $relativePath = $_.FullName.Substring($ExtractedDir.FullName.Length + 1)
+                $shouldExclude = $false
+                
+                foreach ($excludeItem in $ExcludeItems) {
+                    if ($relativePath -like "*$excludeItem*") {
+                        $shouldExclude = $true
+                        break
+                    }
+                }
+                
+                if (-not $shouldExclude) {
+                    $destPath = Join-Path $ProjectPath $relativePath
+                    $destDir = Split-Path $destPath -Parent
+                    
+                    if (-not (Test-Path $destDir)) {
+                        New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+                    }
+                    
+                    if ($_.PSIsContainer -eq $false) {
+                        Copy-Item $_.FullName $destPath -Force
+                    }
                 }
             }
-            
-            if (-not $shouldExclude) {
-                $destPath = Join-Path $ProjectPath $relativePath
-                $destDir = Split-Path $destPath -Parent
-                
-                if (-not (Test-Path $destDir)) {
-                    New-Item -ItemType Directory -Path $destDir -Force | Out-Null
-                }
-                
-                if ($_.PSIsContainer -eq $false) {
-                    Copy-Item $_.FullName $destPath -Force
-                }
-            }
+        } else {
+            Write-Log "Robocopy completed successfully" $Colors.Blue
         }
         
         Write-Success "Project files copied successfully"
@@ -277,61 +296,243 @@ function Main {
         Remove-Item -Path $TempDir -Recurse -Force -ErrorAction SilentlyContinue
     }
     
-    # Update project files
+    # Update project files - COMPREHENSIVE UPDATES (matching working batch script)
     Write-Log "Updating project files..." $Colors.Blue
+    Write-Log "=============================================================================" $Colors.Blue
     
     # Update pubspec.yaml
-    if (Update-FileContent "$ProjectPath\pubspec.yaml" "boiler_plater_flutter_v3" $ProjectName) {
-        Write-Success "Updated pubspec.yaml"
+    Write-Log "  - Updating pubspec.yaml..." $Colors.Blue
+    if (Test-Path "$ProjectPath\pubspec.yaml") {
+        $content = Get-Content "$ProjectPath\pubspec.yaml" -Raw
+        $content = $content -replace "boiler_plater_flutter_v3", $ProjectName
+        Set-Content "$ProjectPath\pubspec.yaml" $content -NoNewline
+        Write-Success "    Updated pubspec.yaml"
+    } else {
+        Write-Warning "    WARNING: pubspec.yaml not found"
     }
     
-    # Update Android files
-    if (Update-FileContent "$ProjectPath\android\app\src\main\AndroidManifest.xml" "boiler_plater_flutter_v3" $ProjectName) {
-        Write-Success "Updated AndroidManifest.xml"
+    # Update Android manifest
+    Write-Log "  - Updating Android manifest..." $Colors.Blue
+    if (Test-Path "$ProjectPath\android\app\src\main\AndroidManifest.xml") {
+        $content = Get-Content "$ProjectPath\android\app\src\main\AndroidManifest.xml" -Raw
+        $content = $content -replace 'android:label="boiler_plater_flutter_v3"', "android:label=`"$ProjectName`""
+        $content = $content -replace "boiler_plater_flutter_v3", $ProjectName
+        Set-Content "$ProjectPath\android\app\src\main\AndroidManifest.xml" $content -NoNewline
+        Write-Success "    Updated AndroidManifest.xml"
+    } else {
+        Write-Warning "    WARNING: AndroidManifest.xml not found"
     }
     
-    if (Update-FileContent "$ProjectPath\android\app\build.gradle.kts" "com.thesua7.boiler_plater_flutter_v3" $FinalPackageName) {
-        Write-Success "Updated Android build.gradle.kts"
-    }
-    
-    # Update iOS files
-    if (Update-FileContent "$ProjectPath\ios\Runner\Info.plist" "boiler_plater_flutter_v3" $ProjectName) {
-        Write-Success "Updated iOS Info.plist"
+    # Update iOS Info.plist
+    Write-Log "  - Updating iOS Info.plist..." $Colors.Blue
+    if (Test-Path "$ProjectPath\ios\Runner\Info.plist") {
+        $content = Get-Content "$ProjectPath\ios\Runner\Info.plist" -Raw
+        $content = $content -replace "boiler_plater_flutter_v3", $ProjectName
+        Set-Content "$ProjectPath\ios\Runner\Info.plist" $content -NoNewline
+        Write-Success "    Updated Info.plist"
+    } else {
+        Write-Warning "    WARNING: Info.plist not found"
     }
     
     # Update README.md
-    if (Update-FileContent "$ProjectPath\README.md" "boiler_plater_flutter_v3" $ProjectName) {
-        Write-Success "Updated README.md"
+    Write-Log "  - Updating README.md..." $Colors.Blue
+    if (Test-Path "$ProjectPath\README.md") {
+        $content = Get-Content "$ProjectPath\README.md" -Raw
+        $content = $content -replace "boiler_plater_flutter_v3", $ProjectName
+        Set-Content "$ProjectPath\README.md" $content -NoNewline
+        Write-Success "    Updated README.md"
+    } else {
+        Write-Warning "    WARNING: README.md not found"
+    }
+    
+    # Update Android build.gradle.kts (comprehensive)
+    Write-Log "  - Updating Android build.gradle.kts..." $Colors.Blue
+    if (Test-Path "$ProjectPath\android\app\build.gradle.kts") {
+        $content = Get-Content "$ProjectPath\android\app\build.gradle.kts" -Raw
+        $content = $content -replace 'namespace = "com\.thesua7\.boiler_plater_flutter_v3"', "namespace = `"$FinalPackageName`""
+        $content = $content -replace 'applicationId = "com\.thesua7\.boiler_plater_flutter_v3"', "applicationId = `"$FinalPackageName`""
+        $content = $content -replace "Boiler Plate Dev", "$ProjectName Dev"
+        $content = $content -replace "Boiler Plate Staging", "$ProjectName Staging"
+        $content = $content -replace "Boiler Plate", $ProjectName
+        $content = $content -replace "Boiler Plater Flutter V3", $ProjectName
+        $content = $content -replace "com\.thesua7\.boiler_plater_flutter_v3", $FinalPackageName
+        $content = $content -replace "com\.thesua7\.", $FinalPackageName
+        Set-Content "$ProjectPath\android\app\build.gradle.kts" $content -NoNewline
+        Write-Success "    Updated android/app/build.gradle.kts"
+    } else {
+        Write-Warning "    WARNING: android/app/build.gradle.kts not found"
+    }
+    
+    # Update Android root build.gradle.kts
+    Write-Log "  - Updating Android root build.gradle.kts..." $Colors.Blue
+    if (Test-Path "$ProjectPath\android\build.gradle.kts") {
+        $content = Get-Content "$ProjectPath\android\build.gradle.kts" -Raw
+        $content = $content -replace "boiler_plater_flutter_v3", $ProjectName
+        Set-Content "$ProjectPath\android\build.gradle.kts" $content -NoNewline
+        Write-Success "    Updated android/build.gradle.kts"
+    } else {
+        Write-Warning "    WARNING: android/build.gradle.kts not found"
+    }
+    
+    # Update and move MainActivity.kt
+    Write-Log "  - Updating and moving MainActivity.kt..." $Colors.Blue
+    $oldPath = "$ProjectPath\android\app\src\main\kotlin\com\thesua7\boiler_plater_flutter_v3\MainActivity.kt"
+    $newPackagePath = $FinalPackageName -replace '\.', '\'
+    $newDir = "$ProjectPath\android\app\src\main\kotlin\$newPackagePath"
+    $newPath = "$newDir\MainActivity.kt"
+    
+    if (Test-Path $oldPath) {
+        $content = Get-Content $oldPath -Raw
+        $content = $content -replace "com\.thesua7\.boiler_plater_flutter_v3", $FinalPackageName
+        if (-not (Test-Path $newDir)) {
+            New-Item -ItemType Directory -Path $newDir -Force | Out-Null
+        }
+        Set-Content $newPath $content -NoNewline
+        Remove-Item $oldPath -Force
+        Write-Success "    Updated and moved MainActivity.kt to new package structure"
+    } else {
+        Write-Warning "    WARNING: MainActivity.kt not found"
+    }
+    
+    # Clean up old package directory
+    Write-Log "  - Cleaning up old package directory..." $Colors.Blue
+    $oldDir = "$ProjectPath\android\app\src\main\kotlin\com\thesua7\boiler_plater_flutter_v3"
+    if (Test-Path $oldDir) {
+        Remove-Item $oldDir -Recurse -Force
+        Write-Success "    Cleaned up old package directory"
+    }
+    
+    # Update iOS project.pbxproj
+    Write-Log "  - Updating iOS project.pbxproj..." $Colors.Blue
+    if (Test-Path "$ProjectPath\ios\Runner.xcodeproj\project.pbxproj") {
+        $content = Get-Content "$ProjectPath\ios\Runner.xcodeproj\project.pbxproj" -Raw
+        $content = $content -replace "PRODUCT_BUNDLE_IDENTIFIER = com\.thesua7\.boilerPlaterFlutterV3", "PRODUCT_BUNDLE_IDENTIFIER = $FinalPackageName"
+        $content = $content -replace "PRODUCT_BUNDLE_IDENTIFIER = com\.thesua7\.boiler_plater_flutter_v3", "PRODUCT_BUNDLE_IDENTIFIER = $FinalPackageName"
+        $content = $content -replace "PRODUCT_BUNDLE_IDENTIFIER = com\.thesua7\.boilerPlaterFlutterV3\.RunnerTests", "PRODUCT_BUNDLE_IDENTIFIER = $FinalPackageName.RunnerTests"
+        $content = $content -replace "PRODUCT_BUNDLE_IDENTIFIER = com\.thesua7\.boiler_plater_flutter_v3\.RunnerTests", "PRODUCT_BUNDLE_IDENTIFIER = $FinalPackageName.RunnerTests"
+        $content = $content -replace "com\.thesua7\.boilerPlaterFlutterV3", $FinalPackageName
+        $content = $content -replace "com\.thesua7\.boiler_plater_flutter_v3", $FinalPackageName
+        $content = $content -replace "boiler_plater_flutter_v3", $ProjectName
+        $content = $content -replace "Boiler Plater Flutter V3", $ProjectName
+        Set-Content "$ProjectPath\ios\Runner.xcodeproj\project.pbxproj" $content -NoNewline
+        Write-Success "    Updated ALL PRODUCT_BUNDLE_IDENTIFIER instances and project.pbxproj"
+    } else {
+        Write-Warning "    WARNING: project.pbxproj not found"
+    }
+    
+    # Update AppInfo.xcconfig
+    Write-Log "  - Updating AppInfo.xcconfig..." $Colors.Blue
+    if (Test-Path "$ProjectPath\macos\Runner\Configs\AppInfo.xcconfig") {
+        $content = Get-Content "$ProjectPath\macos\Runner\Configs\AppInfo.xcconfig" -Raw
+        $content = $content -replace "boiler_plater_flutter_v3", $ProjectName
+        Set-Content "$ProjectPath\macos\Runner\Configs\AppInfo.xcconfig" $content -NoNewline
+        Write-Success "    Updated AppInfo.xcconfig"
+    } else {
+        Write-Warning "    WARNING: AppInfo.xcconfig not found"
+    }
+    
+    # Update all .xcconfig files
+    Write-Log "  - Updating all .xcconfig files..." $Colors.Blue
+    Get-ChildItem -Path $ProjectPath -Recurse -Include "*.xcconfig" | ForEach-Object {
+        Write-Log "    - Updating $($_.Name)..." $Colors.Blue
+        if (Test-Path $_.FullName) {
+            $content = Get-Content $_.FullName -Raw
+            $content = $content -replace "boiler_plater_flutter_v3", $ProjectName
+            $content = $content -replace "com\.thesua7\.boilerPlaterFlutterV3", $FinalPackageName
+            $content = $content -replace "com\.thesua7\.boiler_plater_flutter_v3", $FinalPackageName
+            $content = $content -replace "com\.thesua7\.", $FinalPackageName
+            Set-Content $_.FullName $content -NoNewline
+            Write-Success "      Updated $($_.Name)"
+        }
+    }
+    
+    # Update all CMake files
+    Write-Log "  - Updating all CMake files..." $Colors.Blue
+    Get-ChildItem -Path $ProjectPath -Recurse -Include "*.cmake", "CMakeLists.txt" | ForEach-Object {
+        Write-Log "    - Updating $($_.Name)..." $Colors.Blue
+        if (Test-Path $_.FullName) {
+            $content = Get-Content $_.FullName -Raw
+            $content = $content -replace "boiler_plater_flutter_v3", $ProjectName
+            $content = $content -replace "com\.thesua7\.boilerPlaterFlutterV3", $FinalPackageName
+            $content = $content -replace "com\.thesua7\.boiler_plater_flutter_v3", $FinalPackageName
+            $content = $content -replace "com\.thesua7\.", $FinalPackageName
+            Set-Content $_.FullName $content -NoNewline
+            Write-Success "      Updated $($_.Name)"
+        }
+    }
+    
+    # Update Windows resource files
+    Write-Log "  - Updating Windows resource files..." $Colors.Blue
+    Get-ChildItem -Path $ProjectPath -Recurse -Include "*.rc" | ForEach-Object {
+        Write-Log "    - Updating $($_.Name)..." $Colors.Blue
+        if (Test-Path $_.FullName) {
+            $content = Get-Content $_.FullName -Raw
+            $content = $content -replace "boiler_plater_flutter_v3", $ProjectName
+            $content = $content -replace "com\.thesua7", $FinalPackageName
+            $content = $content -replace "boiler_plater_flutter_v3\.exe", "$ProjectName.exe"
+            Set-Content $_.FullName $content -NoNewline
+            Write-Success "      Updated $($_.Name)"
+        }
+    }
+    
+    # Update widget_test.dart
+    Write-Log "  - Updating widget_test.dart..." $Colors.Blue
+    if (Test-Path "$ProjectPath\test\widget_test.dart") {
+        $content = Get-Content "$ProjectPath\test\widget_test.dart" -Raw
+        $content = $content -replace "package:boiler_plater_flutter_v3/", "package:$ProjectName/"
+        $content = $content -replace "boiler_plater_flutter_v3", $ProjectName
+        Set-Content "$ProjectPath\test\widget_test.dart" $content -NoNewline
+        Write-Success "    Updated widget_test.dart"
+    } else {
+        Write-Warning "    WARNING: widget_test.dart not found"
     }
     
     # Update Dart files
-    Write-Log "Updating Dart files..." $Colors.Blue
-    Update-AllFiles "$ProjectPath\lib" "package:boiler_plater_flutter_v3/" "package:$ProjectName/" "*.dart"
-    Update-AllFiles "$ProjectPath\lib" "boiler_plater_flutter_v3" $ProjectName "*.dart"
-    Write-Success "Updated Dart files"
-    
-    # Update test files
-    if (Update-FileContent "$ProjectPath\test\widget_test.dart" "package:boiler_plater_flutter_v3/" "package:$ProjectName/") {
-        Write-Success "Updated test files"
+    Write-Log "  - Updating Dart files..." $Colors.Blue
+    Get-ChildItem -Path "$ProjectPath\lib" -Recurse -Include "*.dart" | ForEach-Object {
+        Write-Log "    - Updating $($_.Name)..." $Colors.Blue
+        if (Test-Path $_.FullName) {
+            $content = Get-Content $_.FullName -Raw
+            $content = $content -replace "package:boiler_plater_flutter_v3/", "package:$ProjectName/"
+            $content = $content -replace "boiler_plater_flutter_v3", $ProjectName
+            $content = $content -replace "Boiler Plate Dev", "$ProjectName Dev"
+            $content = $content -replace "Boiler Plate Staging", "$ProjectName Staging"
+            $content = $content -replace "Boiler Plate", $ProjectName
+            Set-Content $_.FullName $content -NoNewline
+            Write-Success "      Updated $($_.Name)"
+        }
     }
     
-    # Update MainActivity.kt package structure
-    $OldMainActivityPath = "$ProjectPath\android\app\src\main\kotlin\com\thesua7\boiler_plater_flutter_v3\MainActivity.kt"
-    if (Test-Path $OldMainActivityPath) {
-        # Create new package directory structure
-        $NewPackageDir = "$ProjectPath\android\app\src\main\kotlin\" + ($FinalPackageName -replace '\.', '\')
-        New-Item -ItemType Directory -Path $NewPackageDir -Force | Out-Null
-        
-        # Move and update MainActivity.kt
-        $NewMainActivityPath = Join-Path $NewPackageDir "MainActivity.kt"
-        Copy-Item $OldMainActivityPath $NewMainActivityPath
-        Update-FileContent $NewMainActivityPath "com.thesua7.boiler_plater_flutter_v3" $FinalPackageName | Out-Null
-        
-        # Remove old package directory
-        Remove-Item -Path "$ProjectPath\android\app\src\main\kotlin\com" -Recurse -Force -ErrorAction SilentlyContinue
-        
-        Write-Success "Updated MainActivity.kt package structure"
+    # Update any remaining files with boilerplate references
+    Write-Log "  - Updating any remaining files with boilerplate references..." $Colors.Blue
+    Get-ChildItem -Path $ProjectPath -Recurse -Include "*.dart", "*.kt", "*.xml", "*.yaml", "*.yml", "*.json", "*.md", "*.txt", "*.plist", "*.pbxproj", "*.xcconfig", "*.cmake", "*.rc", "CMakeLists.txt" | ForEach-Object {
+        Write-Log "    - Checking $($_.Name)..." $Colors.Blue
+        if (Test-Path $_.FullName) {
+            $content = Get-Content $_.FullName -Raw
+            $originalContent = $content
+            $content = $content -replace "package:boiler_plater_flutter_v3/", "package:$ProjectName/"
+            $content = $content -replace "boiler_plater_flutter_v3", $ProjectName
+            $content = $content -replace "Boiler Plate Dev", "$ProjectName Dev"
+            $content = $content -replace "Boiler Plate Staging", "$ProjectName Staging"
+            $content = $content -replace "Boiler Plate", $ProjectName
+            $content = $content -replace "Boiler Plater Flutter V3", $ProjectName
+            $content = $content -replace "PRODUCT_BUNDLE_IDENTIFIER = com\.thesua7\.boilerPlaterFlutterV3", "PRODUCT_BUNDLE_IDENTIFIER = $FinalPackageName"
+            $content = $content -replace "PRODUCT_BUNDLE_IDENTIFIER = com\.thesua7\.boiler_plater_flutter_v3", "PRODUCT_BUNDLE_IDENTIFIER = $FinalPackageName"
+            $content = $content -replace "PRODUCT_BUNDLE_IDENTIFIER = com\.thesua7\.boilerPlaterFlutterV3\.RunnerTests", "PRODUCT_BUNDLE_IDENTIFIER = $FinalPackageName.RunnerTests"
+            $content = $content -replace "PRODUCT_BUNDLE_IDENTIFIER = com\.thesua7\.boiler_plater_flutter_v3\.RunnerTests", "PRODUCT_BUNDLE_IDENTIFIER = $FinalPackageName.RunnerTests"
+            $content = $content -replace "com\.thesua7\.boilerPlaterFlutterV3", $FinalPackageName
+            $content = $content -replace "com\.thesua7\.boiler_plater_flutter_v3", $FinalPackageName
+            $content = $content -replace "com\.thesua7\.", $FinalPackageName
+            $content = $content -replace 'APPLICATION_ID "com\.thesua7\.', "APPLICATION_ID `"$FinalPackageName"
+            $content = $content -replace 'set\(APPLICATION_ID "com\.thesua7\.', "set(APPLICATION_ID `"$FinalPackageName"
+            if ($content -ne $originalContent) {
+                Set-Content $_.FullName $content -NoNewline
+                Write-Success "      Updated $($_.Name)"
+            }
+        }
     }
+    
+    Write-Success "  - File updates completed"
     
     # Change to project directory
     Set-Location $ProjectPath
