@@ -449,6 +449,8 @@ scripts
         $content = $content -replace "com\.thesua7\.boiler_plater_flutter_v3", $FinalPackageName
         $content = $content -replace "boiler_plater_flutter_v3", $ProjectName
         $content = $content -replace "Boiler Plater Flutter V3", $ProjectName
+        $content = $content -replace "BuildableName = `"boiler_plater_flutter_v3\.app`"", "BuildableName = `"$ProjectName.app`""
+        $content = $content -replace "boiler_plater_flutter_v3\.app", "$ProjectName.app"
         Set-Content "$ProjectPath\ios\Runner.xcodeproj\project.pbxproj" $content -NoNewline
         Write-Success "    Updated ALL PRODUCT_BUNDLE_IDENTIFIER instances and project.pbxproj"
     } else {
@@ -560,6 +562,9 @@ scripts
             $content = $content -replace "com\.thesua7\.", $FinalPackageName
             $content = $content -replace 'APPLICATION_ID "com\.thesua7\.', "APPLICATION_ID `"$FinalPackageName"
             $content = $content -replace 'set\(APPLICATION_ID "com\.thesua7\.', "set(APPLICATION_ID `"$FinalPackageName"
+            $content = $content -replace "BuildableName = `"boiler_plater_flutter_v3\.app`"", "BuildableName = `"$ProjectName.app`""
+            $content = $content -replace "boiler_plater_flutter_v3\.app", "$ProjectName.app"
+            $content = $content -replace "boiler_plater_flutter_v3\.exe", "$ProjectName.exe"
             if ($content -ne $originalContent) {
                 Set-Content $_.FullName $content -NoNewline
                 Write-Success "      Updated $($_.Name)"
