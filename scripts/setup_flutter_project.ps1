@@ -542,7 +542,10 @@ scripts
     
     # Update any remaining files with boilerplate references
     Write-Log "  - Updating any remaining files with boilerplate references..." $Colors.Blue
-    Get-ChildItem -Path $ProjectPath -Recurse -Include "*.dart", "*.kt", "*.xml", "*.yaml", "*.yml", "*.json", "*.md", "*.txt", "*.plist", "*.pbxproj", "*.xcconfig", "*.cmake", "*.rc", "*.cpp", "*.h", "*.c", "*.html", "*.xcscheme", "CMakeLists.txt" | ForEach-Object {
+    $filesToProcess = Get-ChildItem -Path $ProjectPath -Recurse -Include "*.dart", "*.kt", "*.xml", "*.yaml", "*.yml", "*.json", "*.md", "*.txt", "*.plist", "*.pbxproj", "*.xcconfig", "*.cmake", "*.rc", "*.cpp", "*.h", "*.c", "*.cc", "*.html", "*.xcscheme", "CMakeLists.txt" | Where-Object { $_.Name -notmatch "\.(lock|log)$" -and $_.FullName -notmatch "\\build\\" -and $_.FullName -notmatch "\\.git\\" -and $_.FullName -notmatch "\\.dart_tool\\" }
+    Write-Log "  - Found $($filesToProcess.Count) files to process..." $Colors.Blue
+    
+    $filesToProcess | ForEach-Object {
         Write-Log "    - Checking $($_.Name)..." $Colors.Blue
         if (Test-Path $_.FullName) {
             $content = Get-Content $_.FullName -Raw
