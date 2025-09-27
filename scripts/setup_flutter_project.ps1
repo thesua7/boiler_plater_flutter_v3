@@ -244,44 +244,55 @@ function Main {
             "node_modules"
         )
         
-        # Use robocopy for reliable copying (like the working batch script)
+        # Use robocopy with proper path handling (like the working batch script)
         Write-Log "Using robocopy for reliable file copying..." $Colors.Blue
-        $robocopyArgs = @(
-            $ExtractedDir.FullName,
-            $ProjectPath,
-            "/E", "/XD", ".git", ".idea", ".dart_tool", ".vscode", ".fvm", "build", "scripts",
-            "/XF", "*.lock", "pubspec.lock",
-            "/NFL", "/NDL", "/NJH", "/NJS"
-        )
         
-        $robocopyProcess = Start-Process -FilePath "robocopy" -ArgumentList $robocopyArgs -Wait -PassThru -NoNewWindow
-        $robocopyExitCode = $robocopyProcess.ExitCode
+        # Create robocopy command with proper quoting for paths with spaces
+        $robocopyCmd = "robocopy `"$($ExtractedDir.FullName)`" `"$ProjectPath`" /E /XD .git .idea .dart_tool .vscode .fvm build scripts /XF *.lock pubspec.lock /NFL /NDL /NJH /NJS"
+        
+        Write-Log "Robocopy command: $robocopyCmd" $Colors.Blue
+        
+        # Execute robocopy using cmd
+        $robocopyResult = cmd /c $robocopyCmd
+        $robocopyExitCode = $LASTEXITCODE
+        
+        Write-Log "Robocopy exit code: $robocopyExitCode" $Colors.Blue
         
         # Robocopy returns 0-7 for success, 8+ for errors
         if ($robocopyExitCode -gt 7) {
-            Write-Warning "Robocopy failed, trying PowerShell copy..."
-            # Fallback to PowerShell copy
-            Get-ChildItem -Path $ExtractedDir.FullName -Recurse | ForEach-Object {
-                $relativePath = $_.FullName.Substring($ExtractedDir.FullName.Length + 1)
-                $shouldExclude = $false
-                
-                foreach ($excludeItem in $ExcludeItems) {
-                    if ($relativePath -like "*$excludeItem*") {
-                        $shouldExclude = $true
-                        break
-                    }
-                }
-                
-                if (-not $shouldExclude) {
-                    $destPath = Join-Path $ProjectPath $relativePath
-                    $destDir = Split-Path $destPath -Parent
+            Write-Warning "Robocopy failed, trying xcopy fallback..."
+            # Fallback to xcopy (like your working script)
+            $xcopyCmd = "xcopy `"$($ExtractedDir.FullName)\*`" `"$ProjectPath\`" /E /I /H /Y"
+            Write-Log "Xcopy command: $xcopyCmd" $Colors.Blue
+            cmd /c $xcopyCmd
+            $xcopyExitCode = $LASTEXITCODE
+            Write-Log "Xcopy exit code: $xcopyExitCode" $Colors.Blue
+            
+            if ($xcopyExitCode -ne 0) {
+                Write-Warning "Xcopy also failed, trying PowerShell copy..."
+                # Final fallback to PowerShell copy
+                Get-ChildItem -Path $ExtractedDir.FullName -Recurse | ForEach-Object {
+                    $relativePath = $_.FullName.Substring($ExtractedDir.FullName.Length + 1)
+                    $shouldExclude = $false
                     
-                    if (-not (Test-Path $destDir)) {
-                        New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+                    foreach ($excludeItem in $ExcludeItems) {
+                        if ($relativePath -like "*$excludeItem*") {
+                            $shouldExclude = $true
+                            break
+                        }
                     }
                     
-                    if ($_.PSIsContainer -eq $false) {
-                        Copy-Item $_.FullName $destPath -Force
+                    if (-not $shouldExclude) {
+                        $destPath = Join-Path $ProjectPath $relativePath
+                        $destDir = Split-Path $destPath -Parent
+                        
+                        if (-not (Test-Path $destDir)) {
+                            New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+                        }
+                        
+                        if ($_.PSIsContainer -eq $false) {
+                            Copy-Item $_.FullName $destPath -Force
+                        }
                     }
                 }
             }
@@ -290,6 +301,34 @@ function Main {
         }
         
         Write-Success "Project files copied successfully"
+        
+        # Verify key files were copied (like your working script)
+        Write-Log "Verifying copied files..." $Colors.Blue
+        if (Test-Path "$ProjectPath\lib") {
+            Write-Success "    [OK] lib directory copied"
+        } else {
+            Write-Warning "    [ERROR] lib directory NOT found"
+        }
+        if (Test-Path "$ProjectPath\android") {
+            Write-Success "    [OK] android directory copied"
+        } else {
+            Write-Warning "    [ERROR] android directory NOT found"
+        }
+        if (Test-Path "$ProjectPath\pubspec.yaml") {
+            Write-Success "    [OK] pubspec.yaml copied"
+        } else {
+            Write-Warning "    [ERROR] pubspec.yaml NOT found"
+        }
+        if (Test-Path "$ProjectPath\android\app\build.gradle.kts") {
+            Write-Success "    [OK] android/app/build.gradle.kts found"
+        } else {
+            Write-Warning "    [ERROR] android/app/build.gradle.kts NOT found"
+        }
+        if (Test-Path "$ProjectPath\android\build.gradle.kts") {
+            Write-Success "    [OK] android/build.gradle.kts found"
+        } else {
+            Write-Warning "    [ERROR] android/build.gradle.kts NOT found"
+        }
         
     } finally {
         # Clean up temporary directory
