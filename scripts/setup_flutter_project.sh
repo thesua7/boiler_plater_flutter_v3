@@ -2,7 +2,7 @@
 
 # Flutter Project Generator - Curl Version
 # This script downloads and sets up a Flutter project from the boilerplate repository
-# Usage: curl -sSL https://raw.githubusercontent.com/yourusername/boiler_plater_flutter_v3/main/scripts/setup_flutter_project.sh | bash
+# Usage: curl -sSL https://raw.githubusercontent.com/thesua7/boiler_plater_flutter_v3/master/scripts/setup_flutter_project.sh | bash
 
 set -e  # Exit on any error
 
@@ -180,9 +180,9 @@ main() {
     
     # Download the repository as a zip file
     if command_exists curl; then
-        curl -L -o boilerplate.zip "https://github.com/yourusername/boiler_plater_flutter_v3/archive/refs/heads/main.zip"
+        curl -L -o boilerplate.zip "https://github.com/thesua7/boiler_plater_flutter_v3/archive/refs/heads/master.zip"
     elif command_exists wget; then
-        wget -O boilerplate.zip "https://github.com/yourusername/boiler_plater_flutter_v3/archive/refs/heads/main.zip"
+        wget -O boilerplate.zip "https://github.com/thesua7/boiler_plater_flutter_v3/archive/refs/heads/master.zip"
     else
         error "Neither curl nor wget is available. Please install one of them."
         exit 1
@@ -197,7 +197,7 @@ main() {
     fi
     
     # Find the extracted directory
-    EXTRACTED_DIR=$(find . -name "boiler_plater_flutter_v3-main" -type d | head -1)
+    EXTRACTED_DIR=$(find . -name "boiler_plater_flutter_v3-master" -type d | head -1)
     
     if [[ -z "$EXTRACTED_DIR" ]]; then
         error "Failed to extract boilerplate project"

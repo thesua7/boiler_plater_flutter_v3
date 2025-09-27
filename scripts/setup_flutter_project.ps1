@@ -1,6 +1,6 @@
 # Flutter Project Generator - PowerShell Curl Version
 # This script downloads and sets up a Flutter project from the boilerplate repository
-# Usage: Invoke-WebRequest -Uri "https://raw.githubusercontent.com/yourusername/boiler_plater_flutter_v3/main/scripts/setup_flutter_project.ps1" | Invoke-Expression
+# Usage: Invoke-WebRequest -Uri "https://raw.githubusercontent.com/thesua7/boiler_plater_flutter_v3/master/scripts/setup_flutter_project.ps1" | Invoke-Expression
 
 param(
     [string]$ProjectName = "",
@@ -210,7 +210,7 @@ function Main {
     
     try {
         # Download the repository as a zip file
-        $ZipUrl = "https://github.com/yourusername/boiler_plater_flutter_v3/archive/refs/heads/main.zip"
+        $ZipUrl = "https://github.com/thesua7/boiler_plater_flutter_v3/archive/refs/heads/master.zip"
         $ZipPath = Join-Path $TempDir "boilerplate.zip"
         
         Write-Log "Downloading from: $ZipUrl" $Colors.Blue
@@ -221,7 +221,7 @@ function Main {
         Expand-Archive -Path $ZipPath -DestinationPath $TempDir -Force
         
         # Find the extracted directory
-        $ExtractedDir = Get-ChildItem -Path $TempDir -Directory | Where-Object { $_.Name -like "*boiler_plater_flutter_v3*" } | Select-Object -First 1
+        $ExtractedDir = Get-ChildItem -Path $TempDir -Directory | Where-Object { $_.Name -like "*boiler_plater_flutter_v3-master*" } | Select-Object -First 1
         
         if (-not $ExtractedDir) {
             throw "Failed to find extracted boilerplate directory"

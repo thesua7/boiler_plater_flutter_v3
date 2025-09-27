@@ -9,26 +9,47 @@ This guide explains how to use the automated project generation scripts for the 
 - **Features**: Interactive prompts, color-coded output, comprehensive error handling
 - **Usage**: Double-click the file or run from command prompt
 
-### 2. PowerShell Script (`create_flutter_project.ps1`)
-- **Best for**: Advanced users, automation, CI/CD pipelines
-- **Features**: Parameter support, better error handling, more flexible
-- **Usage**: Run from PowerShell with optional parameters
+### 2. Curl-based Scripts (NEW!)
+- **Best for**: Users who want to create projects without cloning the repository
+- **Features**: Direct download, one-command setup, cross-platform
+- **Usage**: Single curl command
+
+#### 2a. Standalone Generator (`standalone_generator.bat`)
+- **Best for**: Windows users who want simple setup
+- **Usage**: `curl -sSL https://raw.githubusercontent.com/thesua7/boiler_plater_flutter_v3/master/scripts/standalone_generator.bat -o create_project.bat && create_project.bat`
+
+#### 2b. Linux/macOS Script (`setup_flutter_project.sh`)
+- **Best for**: Linux/macOS users
+- **Usage**: `curl -sSL https://raw.githubusercontent.com/thesua7/boiler_plater_flutter_v3/master/scripts/setup_flutter_project.sh | bash`
+
+#### 2c. PowerShell Script (`setup_flutter_project.ps1`)
+- **Best for**: Windows PowerShell users
+- **Usage**: `Invoke-WebRequest -Uri "https://raw.githubusercontent.com/thesua7/boiler_plater_flutter_v3/master/scripts/setup_flutter_project.ps1" | Invoke-Expression`
 
 ## 🚀 Quick Start
 
-### Method 1: Batch Script (Recommended for Windows)
-1. **Double-click** `create_flutter_project.bat`
-2. **Follow the prompts** to enter project details
-3. **Wait for completion** and open your new project
+### Method 1: Curl-based (Recommended - No Cloning Required!)
 
-### Method 2: PowerShell Script
-```powershell
-# Interactive mode
-.\create_flutter_project.ps1
-
-# With parameters (non-interactive)
-.\create_flutter_project.ps1 -ProjectName "my_app" -PackageName "com.mycompany.myapp" -Description "My awesome app"
+#### Windows (Command Prompt)
+```cmd
+curl -sSL https://raw.githubusercontent.com/thesua7/boiler_plater_flutter_v3/master/scripts/standalone_generator.bat -o create_project.bat && create_project.bat
 ```
+
+#### Windows (PowerShell)
+```powershell
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/thesua7/boiler_plater_flutter_v3/master/scripts/setup_flutter_project.ps1" | Invoke-Expression
+```
+
+#### Linux/macOS
+```bash
+curl -sSL https://raw.githubusercontent.com/thesua7/boiler_plater_flutter_v3/master/scripts/setup_flutter_project.sh | bash
+```
+
+### Method 2: Traditional (Clone Repository First)
+1. **Clone the repository**: `git clone https://github.com/thesua7/boiler_plater_flutter_v3.git`
+2. **Double-click** `create_flutter_project.bat`
+3. **Follow the prompts** to enter project details
+4. **Wait for completion** and open your new project
 
 ## 📝 Project Configuration
 
