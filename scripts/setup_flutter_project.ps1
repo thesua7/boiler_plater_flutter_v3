@@ -542,14 +542,37 @@ scripts
     
     # Update any remaining files with boilerplate references
     Write-Log "  - Updating any remaining files with boilerplate references..." $Colors.Blue
-    $filesToProcess = Get-ChildItem -Path $ProjectPath -Recurse -Include "*.dart", "*.kt", "*.xml", "*.yaml", "*.yml", "*.json", "*.md", "*.txt", "*.plist", "*.pbxproj", "*.xcconfig", "*.cmake", "*.rc", "*.cpp", "*.h", "*.c", "*.cc", "*.html", "*.xcscheme", "CMakeLists.txt" | Where-Object { $_.Name -notmatch "\.(lock|log)$" -and $_.FullName -notmatch "\\build\\" -and $_.FullName -notmatch "\\.git\\" -and $_.FullName -notmatch "\\.dart_tool\\" }
-    Write-Log "  - Found $($filesToProcess.Count) files to process..." $Colors.Blue
     
-    $filesToProcess | ForEach-Object {
+    # Get ALL files that might contain boilerplate references
+    $allFiles = Get-ChildItem -Path $ProjectPath -Recurse -File | Where-Object { 
+        $_.Name -notmatch "\.(lock|log)$" -and 
+        $_.FullName -notmatch "\\build\\" -and 
+        $_.FullName -notmatch "\\.git\\" -and 
+        $_.FullName -notmatch "\\.dart_tool\\" -and
+        $_.Extension -match "\.(dart|kt|xml|yaml|yml|json|md|txt|plist|pbxproj|xcconfig|cmake|rc|cpp|h|c|cc|html|xcscheme)$" -or
+        $_.Name -eq "CMakeLists.txt"
+    }
+    
+    Write-Log "  - Found $($allFiles.Count) files to process..." $Colors.Blue
+    
+    # Debug: Show all .cc files found
+    $ccFiles = $allFiles | Where-Object { $_.Extension -eq ".cc" }
+    Write-Log "  - Found $($ccFiles.Count) .cc files: $($ccFiles.Name -join ', ')" $Colors.Yellow
+    
+    $allFiles | ForEach-Object {
         Write-Log "    - Checking $($_.Name)..." $Colors.Blue
         if (Test-Path $_.FullName) {
             $content = Get-Content $_.FullName -Raw
             $originalContent = $content
+            
+            # Debug: Check if this is my_application.cc
+            if ($_.Name -eq "my_application.cc") {
+                $matches = [regex]::Matches($content, "boiler_plater_flutter_v3")
+                Write-Log "      - Processing my_application.cc - Found $($matches.Count) instances of boiler_plater_flutter_v3" $Colors.Yellow
+                if ($matches.Count -gt 0) {
+                    Write-Log "      - Instances found at lines: $($matches | ForEach-Object { $_.Index })" $Colors.Yellow
+                }
+            }
             $content = $content -replace "package:boiler_plater_flutter_v3/", "package:$ProjectName/"
             $content = $content -replace "Boiler Plate Dev", "$ProjectName Dev"
             $content = $content -replace "Boiler Plate Staging", "$ProjectName Staging"
@@ -565,7 +588,18 @@ scripts
             $content = $content -replace 'APPLICATION_ID "com\.thesua7\.', "APPLICATION_ID `"$FinalPackageName"
             $content = $content -replace 'set\(APPLICATION_ID "com\.thesua7\.', "set(APPLICATION_ID `"$FinalPackageName"
             # Replace ALL instances of boiler_plater_flutter_v3 with project name (MUST BE LAST)
-            $content = $content -replace "boiler_plater_flutter_v3", $ProjectName
+            # Use regex with global flag to ensure ALL instances are replaced
+            $content = [regex]::Replace($content, "boiler_plater_flutter_v3", $ProjectName, "Global")
+            
+            # Debug: Check if this is my_application.cc after replacement
+            if ($_.Name -eq "my_application.cc") {
+                $matchesAfter = [regex]::Matches($content, "boiler_plater_flutter_v3")
+                Write-Log "      - After replacement: Found $($matchesAfter.Count) instances of boiler_plater_flutter_v3" $Colors.Yellow
+                if ($matchesAfter.Count -gt 0) {
+                    Write-Log "      - Remaining instances at lines: $($matchesAfter | ForEach-Object { $_.Index })" $Colors.Yellow
+                }
+            }
+            
             if ($content -ne $originalContent) {
                 Set-Content $_.FullName $content -NoNewline
                 Write-Success "      Updated $($_.Name)"
