@@ -568,7 +568,10 @@ scripts
             $content = $content -replace "Boiler Plate Staging", "$ProjectName Staging"
             $content = $content -replace "Boiler Plate", $ProjectName
             $content = $content -replace "Boiler Plater Flutter V3", $ProjectName
-            $content = $content -replace "PRODUCT_BUNDLE_IDENTIFIER = com\.thesua7\.boilerPlaterFlutterV3", "PRODUCT_BUNDLE_IDENTIFIER = $FinalPackageName"
+            # macOS specific replacements
+            $content = $content -replace 'BuildableName = "boiler_plater_flutter_v3\.app"', "BuildableName = `"$ProjectName.app`""
+            $content = $content -replace 'PRODUCT_NAME = boiler_plater_flutter_v3', "PRODUCT_NAME = $ProjectName"
+            $content = $content -replace 'PRODUCT_BUNDLE_IDENTIFIER = com\.thesua7\.boilerPlaterFlutterV3', "PRODUCT_BUNDLE_IDENTIFIER = $FinalPackageName"
             $content = $content -replace "PRODUCT_BUNDLE_IDENTIFIER = com\.thesua7\.boiler_plater_flutter_v3", "PRODUCT_BUNDLE_IDENTIFIER = $FinalPackageName"
             $content = $content -replace "PRODUCT_BUNDLE_IDENTIFIER = com\.thesua7\.boilerPlaterFlutterV3\.RunnerTests", "PRODUCT_BUNDLE_IDENTIFIER = $FinalPackageName.RunnerTests"
             $content = $content -replace "PRODUCT_BUNDLE_IDENTIFIER = com\.thesua7\.boiler_plater_flutter_v3\.RunnerTests", "PRODUCT_BUNDLE_IDENTIFIER = $FinalPackageName.RunnerTests"
@@ -577,6 +580,11 @@ scripts
             $content = $content -replace "com\.thesua7\.", $FinalPackageName
             $content = $content -replace 'APPLICATION_ID "com\.thesua7\.', "APPLICATION_ID `"$FinalPackageName"
             $content = $content -replace 'set\(APPLICATION_ID "com\.thesua7\.', "set(APPLICATION_ID `"$FinalPackageName"
+            # Windows specific replacements
+            $content = $content -replace 'boiler_plater_flutter_v3\.exe', "$ProjectName.exe"
+            # C++ specific replacements for main.cpp and other C++ files
+            $content = $content -replace 'gtk_window_set_title\(window, "boiler_plater_flutter_v3"\)', "gtk_window_set_title(window, `"$ProjectName`")"
+            $content = $content -replace 'gtk_header_bar_set_title\(header_bar, "boiler_plater_flutter_v3"\)', "gtk_header_bar_set_title(header_bar, `"$ProjectName`")"
             # Replace ALL instances of boiler_plater_flutter_v3 with project name (MUST BE LAST)
             # Use simple -replace which is global by default
             $content = $content -replace "boiler_plater_flutter_v3", $ProjectName
